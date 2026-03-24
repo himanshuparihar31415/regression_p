@@ -8,52 +8,72 @@ export const Layout = () => {
   
   const getPageConfig = () => {
     const path = location.pathname;
-    const tabs = [
-      { label: 'Release_2026_03_Sprint_5' },
-      { label: 'QA/UAT/Pre-Prod', active: true }
+    const releaseTabs = [
+      { label: 'Release_2026_03_Sprint_5', path: '#' },
+      { label: 'QA/UAT/Pre-Prod', path: '#' }
     ];
+
+    if (path === '/test-management' || path === '/tagging' || path === '/import-export') {
+      return { 
+        title: 'Test Management', 
+        tabs: [
+          { label: 'Test Cases', path: '/test-management' },
+          { label: 'Tagging & Grouping', path: '/tagging' },
+          { label: 'Import/Export', path: '/import-export' }
+        ] 
+      };
+    }
+
+    if (path === '/automation' || path === '/git-history') {
+      return { 
+        title: 'Automation Management', 
+        tabs: [
+          { label: 'Scripts', path: '/automation' },
+          { label: 'Executions', path: '/execution' },
+          { label: 'Git History', path: '/git-history' }
+        ] 
+      };
+    }
+
+    if (path === '/data-prep' || path === '/readiness' || path === '/service-integrity') {
+      return { 
+        title: 'Data & Env Prep', 
+        tabs: [
+          { label: 'Test Data', path: '/data-prep' },
+          { label: 'Environment Readiness', path: '/readiness' },
+          { label: 'Service Integrity', path: '/service-integrity' }
+        ] 
+      };
+    }
+
+    if (path === '/execution' || path === '/config' || path === '/history') {
+      return { 
+        title: 'Execution Dashboard', 
+        tabs: [
+          { label: 'Live Monitor', path: '/execution' },
+          { label: 'Configuration', path: '/config' },
+          { label: 'History', path: '/history' }
+        ] 
+      };
+    }
 
     switch (path) {
       case '/':
-        return { title: 'Change Identification', tabs };
+        return { title: 'Change Signal', tabs: releaseTabs };
       case '/planning':
-        return { title: 'Scope Planning', tabs };
-      case '/test-management':
-        return { title: 'Test Case Registration', tabs: [
-          { label: 'Test Cases', active: true },
-          { label: 'Tagging & Grouping' },
-          { label: 'Import/Export' }
-        ] };
-      case '/automation':
-        return { title: 'Automation Management', tabs: [
-          { label: 'Scripts', active: true },
-          { label: 'Executions' },
-          { label: 'Git History' }
-        ] };
-      case '/data-prep':
-        return { title: 'Data & Env Prep', tabs: [
-          { label: 'Test Data', active: true },
-          { label: 'Environment Readiness' },
-          { label: 'Service Integrity' }
-        ] };
+        return { title: 'Scope Planning', tabs: releaseTabs };
       case '/suite-definition':
-        return { title: 'Suite Assembly', tabs };
-      case '/execution':
-        return { title: 'Execution Dashboard', tabs: [
-          { label: 'Live Monitor', active: true },
-          { label: 'Configuration' },
-          { label: 'History' }
-        ] };
+        return { title: 'Suite Assembly', tabs: releaseTabs };
       case '/results':
-        return { title: 'Execution Results', tabs };
+        return { title: 'Execution Results', tabs: releaseTabs };
       case '/analysis':
-        return { title: 'Failure Analysis', tabs };
+        return { title: 'Failure Analysis', tabs: releaseTabs };
       case '/defects':
-        return { title: 'Defect Handling', tabs };
+        return { title: 'Defect Handling', tabs: releaseTabs };
       case '/coverage':
-        return { title: 'Coverage Analysis', tabs };
+        return { title: 'Coverage Analysis', tabs: releaseTabs };
       default:
-        return { title: 'IntelliQA', tabs };
+        return { title: 'IntelliQA', tabs: releaseTabs };
     }
   };
 

@@ -1,22 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Play, Pause, Square, Activity, CheckCircle2, XCircle, Clock, AlertTriangle, TrendingUp } from 'lucide-react';
 
+const MOCK_RESULTS = [
+  { id: 'TC_045', name: 'Payment via Card', status: 'Passed', time: '12s', thread: 'T-01' },
+  { id: 'TC_089', name: 'Wire Transfer Int', status: 'Failed', time: '45s', thread: 'T-04', error: 'Timeout: Element not visible' },
+  { id: 'TC_001', name: 'Login Valid User', status: 'Passed', time: '8s', thread: 'T-02' },
+  { id: 'TC_112', name: 'Portfolio Rebalance', status: 'Passed', time: '1m 2s', thread: 'T-08' },
+];
+
 export const ExecutionDashboard = () => {
+  const [isRunning, setIsRunning] = useState(true);
+  const [progress, setProgress] = useState(64);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isRunning && progress < 100) {
+      interval = setInterval(() => {
+        setProgress(prev => Math.min(prev + 1, 100));
+      }, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [isRunning, progress]);
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="px-8 py-6 bg-surface-container-low flex justify-between items-center shrink-0">
         <div className="flex items-center gap-4">
-          <div className="w-3 h-3 rounded-full bg-primary animate-pulse"></div>
+          <div className={`w-3 h-3 rounded-full ${isRunning ? 'bg-primary animate-pulse' : 'bg-outline'}`}></div>
           <div>
             <h2 className="text-2xl font-black font-headline tracking-tight text-on-surface">Regression Execution Live</h2>
             <p className="text-sm text-secondary font-medium mt-1">Real-time monitoring of active regression suite performance.</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <button className="p-2 bg-surface-container-high rounded-md hover:bg-surface-container-highest transition-colors">
-            <Pause className="w-5 h-5 text-on-surface" />
+          <button 
+            onClick={() => setIsRunning(!isRunning)}
+            className="p-2 bg-surface-container-high rounded-md hover:bg-surface-container-highest transition-colors"
+          >
+            {isRunning ? <Pause className="w-5 h-5 text-on-surface" /> : <Play className="w-5 h-5 text-primary fill-current" />}
           </button>
-          <button className="p-2 bg-surface-container-high rounded-md hover:bg-surface-container-highest transition-colors">
+          <button 
+            onClick={() => { setIsRunning(false); setProgress(0); }}
+            className="p-2 bg-surface-container-high rounded-md hover:bg-surface-container-highest transition-colors"
+          >
             <Square className="w-5 h-5 text-error" />
           </button>
           <div className="w-px bg-outline-variant/20 mx-2"></div>
@@ -28,7 +54,7 @@ export const ExecutionDashboard = () => {
         <section className="flex-1 p-8 overflow-y-auto no-scrollbar space-y-8">
           <div className="grid grid-cols-4 gap-6">
             {[
-              { label: 'Total Progress', value: '64%', icon: Activity, color: 'primary' },
+              { label: 'Total Progress', value: `${progress}%`, icon: Activity, color: 'primary' },
               { label: 'Passed', value: '112', icon: CheckCircle2, color: 'primary' },
               { label: 'Failed', value: '4', icon: XCircle, color: 'error' },
               { label: 'Time Elapsed', value: '42m 12s', icon: Clock, color: 'secondary' },
@@ -54,9 +80,9 @@ export const ExecutionDashboard = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-[10px] font-bold text-outline uppercase tracking-widest">Thread {i + 1}</span>
                     <div className="flex gap-1">
-                      <div className="w-1 h-1 rounded-full bg-primary animate-bounce" style={{ animationDelay: `${i * 0.1}s` }}></div>
-                      <div className="w-1 h-1 rounded-full bg-primary animate-bounce" style={{ animationDelay: `${i * 0.1 + 0.1}s` }}></div>
-                      <div className="w-1 h-1 rounded-full bg-primary animate-bounce" style={{ animationDelay: `${i * 0.1 + 0.2}s` }}></div>
+                      <div className={`w-1 h-1 rounded-full bg-primary ${isRunning ? 'animate-bounce' : ''}`} style={{ animationDelay: `${i * 0.1}s` }}></div>
+                      <div className={`w-1 h-1 rounded-full bg-primary ${isRunning ? 'animate-bounce' : ''}`} style={{ animationDelay: `${i * 0.1 + 0.1}s` }}></div>
+                      <div className={`w-1 h-1 rounded-full bg-primary ${isRunning ? 'animate-bounce' : ''}`} style={{ animationDelay: `${i * 0.1 + 0.2}s` }}></div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -86,12 +112,7 @@ export const ExecutionDashboard = () => {
             <div className="max-h-64 overflow-y-auto no-scrollbar">
               <table className="w-full text-left border-collapse">
                 <tbody className="text-[11px]">
-                  {[
-                    { id: 'TC_045', name: 'Payment via Card', status: 'Passed', time: '12s', thread: 'T-01' },
-                    { id: 'TC_089', name: 'Wire Transfer Int', status: 'Failed', time: '45s', thread: 'T-04', error: 'Timeout: Element not visible' },
-                    { id: 'TC_001', name: 'Login Valid User', status: 'Passed', time: '8s', thread: 'T-02' },
-                    { id: 'TC_112', name: 'Portfolio Rebalance', status: 'Passed', time: '1m 2s', thread: 'T-08' },
-                  ].map((result, i) => (
+                  {MOCK_RESULTS.map((result, i) => (
                     <React.Fragment key={i}>
                       <tr className="hover:bg-surface-container-high transition-colors border-b border-outline-variant/5">
                         <td className="px-6 py-3 font-mono text-primary font-bold">{result.id}</td>
@@ -145,7 +166,7 @@ export const ExecutionDashboard = () => {
               <span className="text-2xl font-black">14:52 PM</span>
             </div>
             <div className="w-full bg-surface/20 h-2 rounded-full overflow-hidden">
-              <div className="bg-primary h-full w-[64%]"></div>
+              <div className="bg-primary h-full transition-all duration-1000" style={{ width: `${progress}%` }}></div>
             </div>
           </div>
         </aside>

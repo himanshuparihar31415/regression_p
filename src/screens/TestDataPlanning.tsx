@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Database, Plus, Search, Filter, MoreVertical, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
 
+const MOCK_DATA_SETS = [
+  { name: 'Payment_Test_Users', type: 'Masked', source: 'Prod_Clone', records: '5,000', status: 'Ready', date: '2h ago' },
+  { name: 'Edge_Case_Accounts', type: 'Synthetic', source: 'AI_Generator', records: '250', status: 'Provisioning', date: 'In Progress' },
+  { name: 'Portfolio_Benchmarks', type: 'Synthetic', source: 'Script_Gen', records: '10,000', status: 'Ready', date: '1d ago' },
+  { name: 'Auth_Tokens_UAT', type: 'Masked', source: 'Auth_Service', records: '1,200', status: 'Ready', date: '3h ago' },
+];
+
 export const TestDataPlanning = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedType, setSelectedType] = useState('All Types');
+
+  const filteredDataSets = MOCK_DATA_SETS.filter(ds => {
+    const matchesSearch = ds.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesType = selectedType === 'All Types' || ds.type === selectedType;
+    return matchesSearch && matchesType;
+  });
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="px-8 py-6 flex justify-between items-end shrink-0">
@@ -10,7 +26,10 @@ export const TestDataPlanning = () => {
           <p className="text-sm text-secondary mt-1">Architecting and provisioning synthetic and masked data for regression cycles.</p>
         </div>
         <div className="flex gap-3">
-          <button className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md text-sm font-semibold flex items-center gap-2">
+          <button 
+            onClick={() => alert('Syncing with DB...')}
+            className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md text-sm font-semibold flex items-center gap-2"
+          >
             <RefreshCw className="w-4 h-4" /> Sync with DB
           </button>
           <button className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-4 py-2 rounded-md text-sm font-bold flex items-center gap-2 shadow-sm">
@@ -25,11 +44,21 @@ export const TestDataPlanning = () => {
             <div className="flex gap-4">
               <div className="relative w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-outline w-4 h-4" />
-                <input className="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 py-1.5 text-xs focus:ring-1 focus:ring-primary" placeholder="Search data sets..." type="text"/>
+                <input 
+                  className="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 py-1.5 text-xs focus:ring-1 focus:ring-primary" 
+                  placeholder="Search data sets..." 
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">Type:</span>
-                <select className="bg-surface-container-low border-none text-[10px] font-bold rounded px-2 py-1 focus:ring-1 focus:ring-primary">
+                <select 
+                  className="bg-surface-container-low border-none text-[10px] font-bold rounded px-2 py-1 focus:ring-1 focus:ring-primary"
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                >
                   <option>All Types</option>
                   <option>Synthetic</option>
                   <option>Masked</option>
@@ -54,11 +83,7 @@ export const TestDataPlanning = () => {
                 </tr>
               </thead>
               <tbody className="text-xs">
-                {[
-                  { name: 'Payment_Test_Users', type: 'Masked', source: 'Prod_Clone', records: '5,000', status: 'Ready', date: '2h ago' },
-                  { name: 'Edge_Case_Accounts', type: 'Synthetic', source: 'AI_Generator', records: '250', status: 'Provisioning', date: 'In Progress' },
-                  { name: 'Portfolio_Benchmarks', type: 'Synthetic', source: 'Script_Gen', records: '10,000', status: 'Ready', date: '1d ago' },
-                ].map((data, i) => (
+                {filteredDataSets.map((data, i) => (
                   <tr key={i} className="group hover:bg-surface-container-high transition-colors cursor-pointer border-b border-outline-variant/5">
                     <td className="px-6 py-4 font-bold text-on-surface">{data.name}</td>
                     <td className="px-6 py-4">

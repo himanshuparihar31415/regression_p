@@ -1,7 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Settings, Play, Save, Code, Terminal, GitBranch, Zap, Clock, ShieldCheck } from 'lucide-react';
 
+const MOCK_ENV_VARS = [
+  { key: 'BASE_URL', value: 'https://uat.assetmark.com', type: 'System' },
+  { key: 'TIMEOUT', value: '30000', type: 'Execution' },
+  { key: 'RETRY_COUNT', value: '2', type: 'Execution' },
+];
+
 export const ExecutionConfig = () => {
+  const [envVars, setEnvVars] = useState(MOCK_ENV_VARS);
+  const [autoTriggerPR, setAutoTriggerPR] = useState(true);
+  const [nightlySchedule, setNightlySchedule] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = () => {
+    setIsSaving(true);
+    setTimeout(() => {
+      setIsSaving(false);
+      alert('Configuration saved successfully.');
+    }, 1500);
+  };
+
+  const updateEnvVar = (index: number, value: string) => {
+    const newVars = [...envVars];
+    newVars[index].value = value;
+    setEnvVars(newVars);
+  };
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="px-8 py-6 bg-surface-container-low flex justify-between items-center shrink-0">
@@ -10,9 +35,18 @@ export const ExecutionConfig = () => {
           <p className="text-sm text-secondary font-medium mt-1">Configure pipeline triggers, environment parameters, and execution logic.</p>
         </div>
         <div className="flex gap-3">
-          <button className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md font-bold text-xs uppercase tracking-widest">Reset Defaults</button>
-          <button className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-2 rounded-md font-bold text-xs uppercase tracking-widest shadow-sm flex items-center gap-2">
-            <Save className="w-4 h-4" /> Save Config
+          <button 
+            onClick={() => { setEnvVars(MOCK_ENV_VARS); setAutoTriggerPR(true); setNightlySchedule(true); }}
+            className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md font-bold text-xs uppercase tracking-widest hover:bg-surface-container-highest transition-colors"
+          >
+            Reset Defaults
+          </button>
+          <button 
+            onClick={handleSave}
+            disabled={isSaving}
+            className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-2 rounded-md font-bold text-xs uppercase tracking-widest shadow-sm flex items-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" /> {isSaving ? 'Saving...' : 'Save Config'}
           </button>
         </div>
       </div>
@@ -48,15 +82,15 @@ jobs:
               <section className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/10">
                 <h3 className="text-[10px] font-bold text-secondary uppercase tracking-widest mb-6">Environment Variables</h3>
                 <div className="space-y-3">
-                  {[
-                    { key: 'BASE_URL', value: 'https://uat.assetmark.com', type: 'System' },
-                    { key: 'TIMEOUT', value: '30000', type: 'Execution' },
-                    { key: 'RETRY_COUNT', value: '2', type: 'Execution' },
-                  ].map((env, i) => (
+                  {envVars.map((env, i) => (
                     <div key={i} className="flex items-center gap-4 p-3 bg-surface-container-low rounded-xl group hover:bg-surface-container-high transition-colors">
                       <div className="flex-1">
                         <span className="text-[10px] font-bold text-outline uppercase tracking-widest block mb-1">{env.key}</span>
-                        <input className="w-full bg-transparent border-none p-0 text-xs font-bold text-on-surface focus:ring-0" defaultValue={env.value} />
+                        <input 
+                          value={env.value}
+                          onChange={(e) => updateEnvVar(i, e.target.value)}
+                          className="w-full bg-transparent border-none p-0 text-xs font-bold text-on-surface focus:ring-0" 
+                        />
                       </div>
                       <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">{env.type}</span>
                     </div>
@@ -76,8 +110,11 @@ jobs:
                       <span className="text-sm font-bold text-on-surface">Auto-Trigger on PR</span>
                       <span className="text-[10px] text-outline font-bold">Trigger regression on every pull request</span>
                     </div>
-                    <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-primary cursor-pointer">
-                      <span className="inline-block h-4 w-4 transform rounded-full bg-white transition translate-x-6"></span>
+                    <div 
+                      onClick={() => setAutoTriggerPR(!autoTriggerPR)}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${autoTriggerPR ? 'bg-primary' : 'bg-outline'}`}
+                    >
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${autoTriggerPR ? 'translate-x-6' : 'translate-x-1'}`}></span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl">
@@ -85,8 +122,11 @@ jobs:
                       <span className="text-sm font-bold text-on-surface">Nightly Schedule</span>
                       <span className="text-[10px] text-outline font-bold">Run full suite at 12:00 AM UTC</span>
                     </div>
-                    <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-primary cursor-pointer">
-                      <span className="inline-block h-4 w-4 transform rounded-full bg-white transition translate-x-6"></span>
+                    <div 
+                      onClick={() => setNightlySchedule(!nightlySchedule)}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${nightlySchedule ? 'bg-primary' : 'bg-outline'}`}
+                    >
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${nightlySchedule ? 'translate-x-6' : 'translate-x-1'}`}></span>
                     </div>
                   </div>
                 </div>

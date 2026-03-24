@@ -1,7 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Bug, Plus, Search, Filter, MoreVertical, ExternalLink, AlertCircle, CheckCircle2, Clock, User } from 'lucide-react';
 
+const MOCK_DEFECTS = [
+  { id: 'JIRA-402', summary: 'Payment gateway timeout on multi-currency settlement', priority: 'Critical', assignee: 'JD', status: 'Open', tests: 3 },
+  { id: 'JIRA-398', summary: 'MFA recovery flow UI glitch on mobile viewport', priority: 'High', assignee: 'HP', status: 'In Progress', tests: 1 },
+  { id: 'JIRA-385', summary: 'Portfolio rebalance logic error for zero-balance accounts', priority: 'Medium', assignee: 'SA', status: 'Resolved', tests: 2 },
+  { id: 'JIRA-410', summary: 'Login session expiration not triggering redirect', priority: 'High', assignee: 'HP', status: 'Open', tests: 1 },
+];
+
 export const DefectHandling = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('All Status');
+
+  const filteredDefects = MOCK_DEFECTS.filter(defect => {
+    const matchesSearch = defect.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         defect.summary.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = selectedStatus === 'All Status' || defect.status === selectedStatus;
+    return matchesSearch && matchesStatus;
+  });
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="px-8 py-6 bg-surface-container-low flex justify-between items-end shrink-0">
@@ -25,11 +42,21 @@ export const DefectHandling = () => {
             <div className="flex gap-4">
               <div className="relative w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-outline w-4 h-4" />
-                <input className="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 py-1.5 text-xs focus:ring-1 focus:ring-primary" placeholder="Search defects..." type="text"/>
+                <input 
+                  className="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 py-1.5 text-xs focus:ring-1 focus:ring-primary" 
+                  placeholder="Search defects..." 
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">Status:</span>
-                <select className="bg-surface-container-low border-none text-[10px] font-bold rounded px-2 py-1 focus:ring-1 focus:ring-primary">
+                <select 
+                  className="bg-surface-container-low border-none text-[10px] font-bold rounded px-2 py-1 focus:ring-1 focus:ring-primary"
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                >
                   <option>All Status</option>
                   <option>Open</option>
                   <option>In Progress</option>
@@ -55,11 +82,7 @@ export const DefectHandling = () => {
                 </tr>
               </thead>
               <tbody className="text-xs">
-                {[
-                  { id: 'JIRA-402', summary: 'Payment gateway timeout on multi-currency settlement', priority: 'Critical', assignee: 'JD', status: 'Open', tests: 3 },
-                  { id: 'JIRA-398', summary: 'MFA recovery flow UI glitch on mobile viewport', priority: 'High', assignee: 'HP', status: 'In Progress', tests: 1 },
-                  { id: 'JIRA-385', summary: 'Portfolio rebalance logic error for zero-balance accounts', priority: 'Medium', assignee: 'SA', status: 'Resolved', tests: 2 },
-                ].map((defect, i) => (
+                {filteredDefects.map((defect, i) => (
                   <tr key={i} className="group hover:bg-surface-container-high transition-colors cursor-pointer border-b border-outline-variant/5">
                     <td className="px-6 py-4 font-mono text-primary font-bold">{defect.id}</td>
                     <td className="px-6 py-4 font-bold text-on-surface max-w-xs truncate">{defect.summary}</td>

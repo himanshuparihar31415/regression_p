@@ -1,7 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ShieldAlert, Search, Filter, MoreVertical, ChevronRight, Zap, AlertTriangle, CheckCircle2, Bug, TrendingUp } from 'lucide-react';
 
+const MOCK_FAILURES = [
+  { id: 'TC_089', name: 'Wire Transfer Int', class: 'Environment', conf: '98%', status: 'AI Classified', error: 'TimeoutError: waiting for selector "[data-testid=\'success-icon\']" failed: timeout 30000ms exceeded', stack: 'at Page.waitForSelector (node_modules/playwright/lib/page.js:124:23)\nat Object.test (tests/payment_flow.spec.ts:18:14)', aiAnalysis: 'Analysis of system logs during execution shows 503 Service Unavailable from the Notification Hub. This caused the success icon to never render.' },
+  { id: 'TC_102', name: 'Balance Update', class: 'Code Bug', conf: '84%', status: 'Unclassified', error: 'AssertionError: expected 1000 to be 1050', stack: 'at Object.test (tests/balance.spec.ts:42:18)', aiAnalysis: 'The expected balance update did not reflect after the transaction. Likely a race condition in the ledger service.' },
+  { id: 'TC_044', name: 'Card Validation', class: 'Data Issue', conf: '92%', status: 'AI Classified', error: 'Error: Card number "4111..." is expired', stack: 'at Object.test (tests/card.spec.ts:12:5)', aiAnalysis: 'The test data used for this scenario contains an expired card. Update test data set.' },
+];
+
 export const FailureAnalysis = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFailure, setSelectedFailure] = useState(MOCK_FAILURES[0]);
+  const [isTriaging, setIsTriaging] = useState(false);
+
+  const filteredFailures = MOCK_FAILURES.filter(f => 
+    f.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    f.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleTriage = () => {
+    setIsTriaging(true);
+    setTimeout(() => {
+      setIsTriaging(false);
+      alert(`Failure ${selectedFailure.id} has been triaged as ${selectedFailure.class}.`);
+    }, 1500);
+  };
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="px-8 py-6 bg-surface-container-low flex justify-between items-center shrink-0">
@@ -10,8 +33,8 @@ export const FailureAnalysis = () => {
           <p className="text-sm text-secondary font-medium mt-1">AI-powered analysis and manual triage of regression failures.</p>
         </div>
         <div className="flex gap-3">
-          <button className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md font-bold text-xs uppercase tracking-widest">Mark All as Env</button>
-          <button className="bg-primary text-on-primary px-6 py-2 rounded-md font-bold text-xs uppercase tracking-widest shadow-sm flex items-center gap-2">
+          <button className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md font-bold text-xs uppercase tracking-widest hover:bg-surface-container-highest transition-colors">Mark All as Env</button>
+          <button className="bg-primary text-on-primary px-6 py-2 rounded-md font-bold text-xs uppercase tracking-widest shadow-sm flex items-center gap-2 hover:opacity-90 transition-opacity">
             <Bug className="w-4 h-4" /> Log Defects
           </button>
         </div>
@@ -38,9 +61,17 @@ export const FailureAnalysis = () => {
               <div className="flex gap-4">
                 <div className="relative w-48">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-outline w-3.5 h-3.5" />
-                  <input className="w-full bg-surface-container-low border-none rounded-full pl-9 pr-3 py-1 text-[10px] focus:ring-1 focus:ring-primary" placeholder="Search failures..." type="text"/>
+                  <input 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-surface-container-low border-none rounded-full pl-9 pr-3 py-1 text-[10px] focus:ring-1 focus:ring-primary" 
+                    placeholder="Search failures..." 
+                    type="text"
+                  />
                 </div>
-                <Filter className="w-4 h-4 text-outline" />
+                <button className="p-1 hover:bg-surface-container-high rounded transition-colors">
+                  <Filter className="w-4 h-4 text-outline" />
+                </button>
               </div>
             </div>
             <div className="max-h-96 overflow-y-auto no-scrollbar">
@@ -55,12 +86,12 @@ export const FailureAnalysis = () => {
                   </tr>
                 </thead>
                 <tbody className="text-xs">
-                  {[
-                    { id: 'TC_089', name: 'Wire Transfer Int', class: 'Environment', conf: '98%', status: 'AI Classified' },
-                    { id: 'TC_102', name: 'Balance Update', class: 'Code Bug', conf: '84%', status: 'Unclassified' },
-                    { id: 'TC_044', name: 'Card Validation', class: 'Data Issue', conf: '92%', status: 'AI Classified' },
-                  ].map((failure, i) => (
-                    <tr key={i} className="hover:bg-surface-container-high transition-colors border-b border-outline-variant/5 cursor-pointer group">
+                  {filteredFailures.map((failure, i) => (
+                    <tr 
+                      key={i} 
+                      onClick={() => setSelectedFailure(failure)}
+                      className={`hover:bg-surface-container-high transition-colors border-b border-outline-variant/5 cursor-pointer group ${selectedFailure.id === failure.id ? 'bg-primary/5' : ''}`}
+                    >
                       <td className="px-6 py-4 font-mono text-primary font-bold">{failure.id}</td>
                       <td className="px-6 py-4 font-bold text-on-surface">{failure.name}</td>
                       <td className="px-6 py-4">
@@ -79,6 +110,11 @@ export const FailureAnalysis = () => {
                       </td>
                     </tr>
                   ))}
+                  {filteredFailures.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="text-center py-8 text-outline text-xs font-medium uppercase tracking-widest">No failures found matching your search.</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -89,7 +125,7 @@ export const FailureAnalysis = () => {
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[10px] font-bold text-tertiary uppercase tracking-widest">Failure Analysis</span>
-              <h3 className="text-xl font-black font-headline text-on-surface">TC_089</h3>
+              <h3 className="text-xl font-black font-headline text-on-surface">{selectedFailure.id}</h3>
             </div>
             <button className="text-outline hover:text-on-surface">
               <MoreVertical className="w-5 h-5" />
@@ -99,13 +135,12 @@ export const FailureAnalysis = () => {
           <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/10 shadow-sm space-y-4">
             <div>
               <span className="text-[10px] font-bold text-outline uppercase tracking-widest block mb-1">Error Message</span>
-              <p className="text-[11px] font-mono text-error bg-error/5 p-2 rounded leading-relaxed">TimeoutError: waiting for selector "[data-testid='success-icon']" failed: timeout 30000ms exceeded</p>
+              <p className="text-[11px] font-mono text-error bg-error/5 p-2 rounded leading-relaxed">{selectedFailure.error}</p>
             </div>
             <div>
               <span className="text-[10px] font-bold text-outline uppercase tracking-widest block mb-1">Stack Trace</span>
-              <p className="text-[10px] font-mono text-on-surface-variant bg-surface-container-low p-2 rounded leading-tight h-24 overflow-y-auto no-scrollbar">
-                at Page.waitForSelector (node_modules/playwright/lib/page.js:124:23)<br/>
-                at Object.test (tests/payment_flow.spec.ts:18:14)
+              <p className="text-[10px] font-mono text-on-surface-variant bg-surface-container-low p-2 rounded leading-tight h-24 overflow-y-auto no-scrollbar whitespace-pre-wrap">
+                {selectedFailure.stack}
               </p>
             </div>
           </div>
@@ -116,13 +151,19 @@ export const FailureAnalysis = () => {
               <h4 className="text-xs font-black uppercase tracking-widest">AI Root Cause Analysis</h4>
             </div>
             <p className="text-xs text-on-surface-variant leading-relaxed">
-              Analysis of system logs during execution shows <span className="font-bold text-tertiary">503 Service Unavailable</span> from the Notification Hub. This caused the success icon to never render.
+              {selectedFailure.aiAnalysis}
             </p>
             <div className="p-3 bg-white/40 rounded-lg border border-tertiary/10">
               <p className="text-[10px] font-bold text-tertiary uppercase mb-1">Recommendation</p>
-              <p className="text-[11px] text-on-surface-variant">Classify as <span className="font-bold">Environment Issue</span>. No script update required.</p>
+              <p className="text-[11px] text-on-surface-variant">Classify as <span className="font-bold">{selectedFailure.class === 'Environment' ? 'Environment Issue' : selectedFailure.class}</span>. {selectedFailure.class === 'Environment' ? 'No script update required.' : 'Action required.'}</p>
             </div>
-            <button className="w-full py-2 bg-tertiary text-on-tertiary text-[10px] font-bold uppercase tracking-widest rounded-md shadow-sm">Confirm AI Triage</button>
+            <button 
+              onClick={handleTriage}
+              disabled={isTriaging}
+              className="w-full py-2 bg-tertiary text-on-tertiary text-[10px] font-bold uppercase tracking-widest rounded-md shadow-sm hover:opacity-90 transition-opacity disabled:opacity-50"
+            >
+              {isTriaging ? 'Triaging...' : 'Confirm AI Triage'}
+            </button>
           </div>
 
           <div className="mt-auto">

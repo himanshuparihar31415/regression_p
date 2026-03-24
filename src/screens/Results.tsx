@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { CheckCircle2, XCircle, Clock, TrendingUp, Download, Share2, Filter } from 'lucide-react';
+import { CheckCircle2, XCircle, Clock, TrendingUp, Download, Share2, Filter, Search } from 'lucide-react';
 
 const trendData = [
   { name: 'Mon', pass: 92, fail: 8 },
@@ -10,7 +10,29 @@ const trendData = [
   { name: 'Fri', pass: 94, fail: 6 },
 ];
 
+const MOCK_HISTORY = [
+  { id: 'RUN_1024', suite: 'Core Regression', env: 'UAT', duration: '1h 12m', pass: '94.2%', status: 'Completed' },
+  { id: 'RUN_1023', suite: 'Smoke Test', env: 'QA', duration: '15m', pass: '100%', status: 'Completed' },
+  { id: 'RUN_1022', suite: 'Extended Suite', env: 'Pre-Prod', duration: '4h 22m', pass: '88.4%', status: 'Completed' },
+];
+
 export const Results = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
+
+  const filteredHistory = MOCK_HISTORY.filter(run => 
+    run.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    run.suite.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleExport = () => {
+    setIsExporting(true);
+    setTimeout(() => {
+      setIsExporting(false);
+      alert('Report exported successfully.');
+    }, 1500);
+  };
+
   return (
     <div className="flex-1 p-8 overflow-y-auto no-scrollbar space-y-8">
       <div className="flex justify-between items-end">
@@ -19,14 +41,18 @@ export const Results = () => {
           <p className="text-sm text-secondary font-medium mt-1">Holistic view of regression outcomes, trends, and quality benchmarks.</p>
         </div>
         <div className="flex gap-3">
-          <button className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+          <button className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md font-bold text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
             <Filter className="w-4 h-4" /> Filter
           </button>
-          <button className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+          <button className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md font-bold text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
             <Share2 className="w-4 h-4" /> Share
           </button>
-          <button className="bg-primary text-on-primary px-6 py-2 rounded-md font-bold text-xs uppercase tracking-widest shadow-sm flex items-center gap-2">
-            <Download className="w-4 h-4" /> Export PDF
+          <button 
+            onClick={handleExport}
+            disabled={isExporting}
+            className="bg-primary text-on-primary px-6 py-2 rounded-md font-bold text-xs uppercase tracking-widest shadow-sm flex items-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
+          >
+            <Download className="w-4 h-4" /> {isExporting ? 'Exporting...' : 'Export PDF'}
           </button>
         </div>
       </div>
@@ -94,7 +120,19 @@ export const Results = () => {
         <section className="col-span-12 bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/10 overflow-hidden">
           <div className="px-6 py-4 border-b border-outline-variant/10 flex justify-between items-center">
             <h3 className="text-[10px] font-bold text-secondary uppercase tracking-widest">Recent Execution History</h3>
-            <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">VIEW ALL</span>
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-outline w-3.5 h-3.5" />
+                <input 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-surface-container-low border-none rounded-full pl-9 pr-3 py-1 text-[10px] focus:ring-1 focus:ring-primary w-48" 
+                  placeholder="Search history..." 
+                  type="text"
+                />
+              </div>
+              <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded cursor-pointer hover:bg-primary/20 transition-colors">VIEW ALL</span>
+            </div>
           </div>
           <table className="w-full text-left border-collapse">
             <thead>
@@ -108,11 +146,7 @@ export const Results = () => {
               </tr>
             </thead>
             <tbody className="text-xs">
-              {[
-                { id: 'RUN_1024', suite: 'Core Regression', env: 'UAT', duration: '1h 12m', pass: '94.2%', status: 'Completed' },
-                { id: 'RUN_1023', suite: 'Smoke Test', env: 'QA', duration: '15m', pass: '100%', status: 'Completed' },
-                { id: 'RUN_1022', suite: 'Extended Suite', env: 'Pre-Prod', duration: '4h 22m', pass: '88.4%', status: 'Completed' },
-              ].map((run, i) => (
+              {filteredHistory.map((run, i) => (
                 <tr key={i} className="hover:bg-surface-container-high transition-colors border-b border-outline-variant/5 cursor-pointer group">
                   <td className="px-6 py-4 font-mono text-primary font-bold">{run.id}</td>
                   <td className="px-6 py-4 font-bold text-on-surface">{run.suite}</td>
@@ -124,6 +158,11 @@ export const Results = () => {
                   </td>
                 </tr>
               ))}
+              {filteredHistory.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="text-center py-8 text-outline text-xs font-medium uppercase tracking-widest">No history found matching your search.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </section>

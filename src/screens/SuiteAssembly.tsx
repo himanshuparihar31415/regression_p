@@ -1,7 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Layers, Play, Settings, Save, Search, Filter, ChevronRight, CheckCircle2, AlertTriangle, Zap } from 'lucide-react';
 
+const MOCK_MODULES = [
+  { name: 'Payments', tests: 114, status: 'Ready' },
+  { name: 'Login & Security', tests: 22, status: 'Ready' },
+  { name: 'Portfolio', tests: 48, status: 'Ready' },
+];
+
+const MOCK_SUITE_TESTS = [
+  { id: 'TC_045', name: 'Payment via Card', module: 'Payments', data: 'Payment_Test_Users', priority: 'High' },
+  { id: 'TC_001', name: 'Login Valid User', module: 'Login', data: 'Default_Auth', priority: 'High' },
+  { id: 'TC_089', name: 'Wire Transfer Int', module: 'Payments', data: 'Edge_Case_Accounts', priority: 'Critical' },
+  { id: 'TC_112', name: 'Portfolio Rebalance', module: 'Portfolio', data: 'Portfolio_Benchmarks', priority: 'Medium' },
+];
+
 export const SuiteAssembly = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedModules, setSelectedModules] = useState<string[]>(['Payments', 'Login & Security', 'Portfolio']);
+
+  const toggleModule = (moduleName: string) => {
+    setSelectedModules(prev => 
+      prev.includes(moduleName) ? prev.filter(m => m !== moduleName) : [...prev, moduleName]
+    );
+  };
+
+  const filteredTests = MOCK_SUITE_TESTS.filter(test => {
+    const matchesSearch = test.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         test.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesModule = selectedModules.some(m => test.module.includes(m.split(' ')[0]));
+    return matchesSearch && matchesModule;
+  });
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="px-8 py-6 bg-surface-container-low flex justify-between items-center shrink-0">
@@ -13,7 +42,10 @@ export const SuiteAssembly = () => {
           <button className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md font-bold text-xs uppercase tracking-widest flex items-center gap-2">
             <Save className="w-4 h-4" /> Save Suite
           </button>
-          <button className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-2 rounded-md font-bold text-xs uppercase tracking-widest shadow-sm flex items-center gap-2">
+          <button 
+            onClick={() => alert(`Executing suite with ${filteredTests.length} tests...`)}
+            className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-2 rounded-md font-bold text-xs uppercase tracking-widest shadow-sm flex items-center gap-2"
+          >
             <Play className="w-4 h-4 fill-current" /> Execute Suite
           </button>
         </div>
@@ -25,18 +57,18 @@ export const SuiteAssembly = () => {
             <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/10 flex flex-col">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-[10px] font-bold text-secondary uppercase tracking-widest">Included Modules</h3>
-                <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">3 SELECTED</span>
+                <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">{selectedModules.length} SELECTED</span>
               </div>
               <div className="space-y-3">
-                {[
-                  { name: 'Payments', tests: 114, status: 'Ready' },
-                  { name: 'Login & Security', tests: 22, status: 'Ready' },
-                  { name: 'Portfolio', tests: 48, status: 'Ready' },
-                ].map((module, i) => (
-                  <div key={i} className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl group hover:bg-surface-container-high transition-colors cursor-default">
+                {MOCK_MODULES.map((module, i) => (
+                  <div 
+                    key={i} 
+                    onClick={() => toggleModule(module.name)}
+                    className={`flex items-center justify-between p-4 rounded-xl group transition-colors cursor-pointer ${selectedModules.includes(module.name) ? 'bg-surface-container-low border border-primary/20' : 'bg-surface opacity-60'}`}
+                  >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <CheckCircle2 className="w-4 h-4 text-primary" />
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selectedModules.includes(module.name) ? 'bg-primary/10' : 'bg-surface-container-highest'}`}>
+                        <CheckCircle2 className={`w-4 h-4 ${selectedModules.includes(module.name) ? 'text-primary' : 'text-outline'}`} />
                       </div>
                       <div>
                         <span className="text-sm font-bold text-on-surface">{module.name}</span>
@@ -86,7 +118,13 @@ export const SuiteAssembly = () => {
               <div className="flex gap-4">
                 <div className="relative w-48">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-outline w-3.5 h-3.5" />
-                  <input className="w-full bg-surface-container-low border-none rounded-full pl-9 pr-3 py-1 text-[10px] focus:ring-1 focus:ring-primary" placeholder="Search tests..." type="text"/>
+                  <input 
+                    className="w-full bg-surface-container-low border-none rounded-full pl-9 pr-3 py-1 text-[10px] focus:ring-1 focus:ring-primary" 
+                    placeholder="Search tests..." 
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
                 </div>
                 <Filter className="w-4 h-4 text-outline" />
               </div>
@@ -103,12 +141,7 @@ export const SuiteAssembly = () => {
                   </tr>
                 </thead>
                 <tbody className="text-[11px]">
-                  {[
-                    { id: 'TC_045', name: 'Payment via Card', module: 'Payments', data: 'Payment_Test_Users', priority: 'High' },
-                    { id: 'TC_001', name: 'Login Valid User', module: 'Login', data: 'Default_Auth', priority: 'High' },
-                    { id: 'TC_089', name: 'Wire Transfer Int', module: 'Payments', data: 'Edge_Case_Accounts', priority: 'Critical' },
-                    { id: 'TC_112', name: 'Portfolio Rebalance', module: 'Portfolio', data: 'Portfolio_Benchmarks', priority: 'Medium' },
-                  ].map((test, i) => (
+                  {filteredTests.map((test, i) => (
                     <tr key={i} className="hover:bg-surface-container-high transition-colors border-b border-outline-variant/5">
                       <td className="px-6 py-3 font-mono text-primary font-bold">{test.id}</td>
                       <td className="px-6 py-3 font-bold text-on-surface">{test.name}</td>

@@ -1,7 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ShieldCheck, Server, Activity, Globe, Cpu, AlertTriangle, CheckCircle2, RefreshCw } from 'lucide-react';
 
+const MOCK_SERVICES = [
+  { name: 'Auth Service', status: 'Operational', version: 'v2.4.1', health: 100 },
+  { name: 'Payment Gateway', status: 'Operational', version: 'v1.1.0', health: 98 },
+  { name: 'Ledger Engine', status: 'Operational', version: 'v4.0.2', health: 100 },
+  { name: 'Notification Hub', status: 'Degraded', version: 'v1.2.0', health: 74, warning: true },
+];
+
 export const EnvironmentReadiness = () => {
+  const [isScanning, setIsScanning] = useState(false);
+  const [isScaling, setIsScaling] = useState(false);
+  const [services, setServices] = useState(MOCK_SERVICES);
+
+  const handleScan = () => {
+    setIsScanning(true);
+    setTimeout(() => {
+      setIsScanning(false);
+      alert('Environment scan complete. All systems verified.');
+    }, 2000);
+  };
+
+  const handleAutoScale = () => {
+    setIsScaling(true);
+    setTimeout(() => {
+      setIsScaling(false);
+      setServices(prev => prev.map(s => s.name === 'Notification Hub' ? { ...s, status: 'Operational', health: 100, warning: false } : s));
+      alert('Auto-scaling complete. Notification Hub is now healthy.');
+    }, 2000);
+  };
+
   return (
     <div className="flex-1 p-8 overflow-y-auto no-scrollbar space-y-8">
       <div className="flex justify-between items-end">
@@ -10,10 +38,14 @@ export const EnvironmentReadiness = () => {
           <p className="text-sm text-secondary font-medium mt-1">Real-time system integrity and infrastructure health validation.</p>
         </div>
         <div className="flex gap-3">
-          <button className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md font-bold text-xs uppercase tracking-widest flex items-center gap-2">
-            <RefreshCw className="w-4 h-4" /> Re-Scan
+          <button 
+            onClick={handleScan}
+            disabled={isScanning}
+            className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md font-bold text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-surface-container-highest transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${isScanning ? 'animate-spin' : ''}`} /> {isScanning ? 'Scanning...' : 'Re-Scan'}
           </button>
-          <button className="bg-primary text-on-primary px-6 py-2 rounded-md font-bold text-xs uppercase tracking-widest shadow-sm">Proceed to Execution</button>
+          <button className="bg-primary text-on-primary px-6 py-2 rounded-md font-bold text-xs uppercase tracking-widest shadow-sm hover:opacity-90 transition-opacity">Proceed to Execution</button>
         </div>
       </div>
 
@@ -39,16 +71,13 @@ export const EnvironmentReadiness = () => {
           <div className="px-6 py-4 border-b border-outline-variant/10 flex justify-between items-center">
             <h3 className="text-[10px] font-bold text-secondary uppercase tracking-widest">Service Integrity Status</h3>
             <div className="flex gap-2">
-              <span className="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded font-bold">ALL SERVICES UP</span>
+              <span className="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded font-bold">
+                {services.every(s => !s.warning) ? 'ALL SERVICES UP' : 'DEGRADED PERFORMANCE'}
+              </span>
             </div>
           </div>
           <div className="p-6 space-y-4">
-            {[
-              { name: 'Auth Service', status: 'Operational', version: 'v2.4.1', health: 100 },
-              { name: 'Payment Gateway', status: 'Operational', version: 'v1.1.0', health: 98 },
-              { name: 'Ledger Engine', status: 'Operational', version: 'v4.0.2', health: 100 },
-              { name: 'Notification Hub', status: 'Degraded', version: 'v1.2.0', health: 74, warning: true },
-            ].map((service, i) => (
+            {services.map((service, i) => (
               <div key={i} className="flex items-center gap-6 p-4 bg-surface-container-low rounded-xl group hover:bg-surface-container-high transition-colors">
                 <div className={service.warning ? "w-2 h-2 rounded-full bg-error animate-pulse" : "w-2 h-2 rounded-full bg-primary"}></div>
                 <div className="flex-1">
@@ -99,8 +128,14 @@ export const EnvironmentReadiness = () => {
               <span className="font-bold text-tertiary">Notification Hub</span> is showing increased latency. This may impact time-sensitive regression scripts.
             </p>
             <div className="flex gap-2">
-              <button className="flex-1 py-2 bg-tertiary text-on-tertiary text-[10px] font-bold uppercase tracking-widest rounded-md">Auto-Scale</button>
-              <button className="flex-1 py-2 border border-tertiary text-tertiary text-[10px] font-bold uppercase tracking-widest rounded-md">Ignore</button>
+              <button 
+                onClick={handleAutoScale}
+                disabled={isScaling || !services.find(s => s.name === 'Notification Hub')?.warning}
+                className="flex-1 py-2 bg-tertiary text-on-tertiary text-[10px] font-bold uppercase tracking-widest rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {isScaling ? 'Scaling...' : 'Auto-Scale'}
+              </button>
+              <button className="flex-1 py-2 border border-tertiary text-tertiary text-[10px] font-bold uppercase tracking-widest rounded-md hover:bg-tertiary/10 transition-colors">Ignore</button>
             </div>
           </div>
         </aside>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { 
   Bolt, 
   CalendarDays, 
@@ -17,9 +17,11 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
+import { useSignal } from '../context/SignalContext';
+
 const navItems = [
-  { icon: Bolt, label: 'Change Trigger', path: '/' },
-  { icon: CalendarDays, label: 'Planning', path: '/planning' },
+  { icon: Bolt, label: 'Change Signal', path: '/' },
+  { icon: CalendarDays, label: 'Planning', path: '/planning', requiresSignal: true },
   { icon: ClipboardCheck, label: 'Test Management', path: '/test-management' },
   { icon: Settings2, label: 'Automation Management', path: '/automation' },
   { icon: Database, label: 'Data & Env Prep', path: '/data-prep' },
@@ -31,6 +33,9 @@ const navItems = [
 ];
 
 export const SideNavBar = () => {
+  const location = useLocation();
+  const { isSignalDetected } = useSignal();
+
   return (
     <aside className="h-screen w-64 fixed left-0 top-0 flex flex-col bg-surface-container-low border-r border-outline-variant/10 z-40">
       <div className="flex flex-col h-full py-6 px-4">
@@ -40,21 +45,41 @@ export const SideNavBar = () => {
         </div>
         
         <nav className="flex-1 space-y-1 overflow-y-auto no-scrollbar">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) => cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-all duration-200",
-                isActive 
-                  ? "bg-surface-container-lowest text-primary font-bold shadow-sm translate-x-1" 
-                  : "text-secondary hover:bg-surface-container-high"
-              )}
-            >
-              <item.icon className="w-4 h-4" />
-              {item.label}
-            </NavLink>
-          ))}
+          {navItems.map((item) => {
+            const isDisabled = item.requiresSignal && !isSignalDetected;
+            
+            return (
+              <NavLink
+                key={item.path}
+                to={isDisabled ? "#" : item.path}
+                onClick={(e) => {
+                  if (isDisabled) {
+                    e.preventDefault();
+                    alert('Please detect a Change Signal first to enable Planning.');
+                  }
+                }}
+                className={({ isActive }) => {
+                  // Custom active logic for sub-routes
+                  const isSubRouteActive = 
+                    (item.path === '/test-management' && ['/test-management', '/tagging', '/import-export'].includes(location.pathname)) ||
+                    (item.path === '/automation' && ['/automation', '/git-history'].includes(location.pathname)) ||
+                    (item.path === '/data-prep' && ['/data-prep', '/readiness', '/service-integrity'].includes(location.pathname)) ||
+                    (item.path === '/execution' && ['/execution', '/config', '/history'].includes(location.pathname));
+
+                  return cn(
+                    "flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-all duration-200",
+                    (isActive || isSubRouteActive)
+                      ? "bg-surface-container-lowest text-primary font-bold shadow-sm translate-x-1" 
+                      : "text-secondary hover:bg-surface-container-high",
+                    isDisabled && "opacity-40 cursor-not-allowed grayscale"
+                  );
+                }}
+              >
+                <item.icon className="w-4 h-4" />
+                {item.label}
+              </NavLink>
+            );
+          })}
         </nav>
 
         <div className="mt-auto pt-6 border-t border-outline-variant/10 flex flex-col gap-1">
