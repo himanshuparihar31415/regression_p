@@ -302,7 +302,6 @@ export const ChangeSignal = () => {
         <div className="flex-1 flex flex-col pt-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-[11px] font-headline font-bold text-tertiary uppercase tracking-widest flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm">psychology</span>
               AI Insights
             </h3>
             <span className={`w-2 h-2 rounded-full bg-tertiary ${isDetecting ? 'animate-pulse' : ''}`}></span>

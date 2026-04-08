@@ -135,7 +135,6 @@ export const TestDataPlanning = () => {
 
           <div className="bg-tertiary/5 backdrop-blur-xl border-l-4 border-tertiary rounded-xl p-5 flex flex-col gap-4">
             <div className="flex items-center gap-2 text-tertiary">
-              <span className="material-symbols-outlined text-lg">psychology</span>
               <h4 className="text-[11px] font-bold uppercase tracking-tight">AI Data Generation</h4>
             </div>
             <p className="text-xs text-on-surface-variant leading-relaxed">Detected missing scenarios for <span className="font-bold">International Wire Transfers</span>. AI can generate 50 synthetic records with valid SWIFT codes.</p>
