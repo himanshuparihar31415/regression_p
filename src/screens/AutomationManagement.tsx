@@ -105,7 +105,7 @@ export const AutomationManagement = () => {
             </button>
           </div>
         </div>
-        <div className="flex-1 overflow-auto p-6 font-mono text-[11px] leading-relaxed text-on-surface-variant bg-[#0d1117] text-gray-300">
+        <div className="flex-1 overflow-auto p-6 font-mono text-[11px] leading-relaxed text-on-surface-variant bg-[#0d1117] text-white">
           <pre className="no-scrollbar">
             {selectedScript.content}
           </pre>
