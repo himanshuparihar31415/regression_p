@@ -40,7 +40,7 @@ export const SideNavBar = () => {
     <aside className="h-screen w-64 fixed left-0 top-0 flex flex-col bg-surface-container-low border-r border-outline-variant/10 z-40">
       <div className="flex flex-col h-full py-6 px-4">
         <div className="mb-8 px-2">
-          <div className="font-headline font-black text-primary uppercase tracking-widest text-lg">IntelliQA</div>
+          <div className="font-headline font-black text-primary uppercase tracking-widest text-lg">Intelli<span className="text-orange-500">QA</span></div>
           <div className="text-[10px] text-secondary font-bold tracking-tight">Precision Architect</div>
         </div>
         
