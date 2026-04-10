@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, TrendingUp, Search, Database, Github, GitBranch, RefreshCw, CheckCircle2, AlertCircle, Layers, ArrowRight } from 'lucide-react';
+import { Play, TrendingUp, Search, Database, Github, GitBranch, RefreshCw, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 import { AIInsightCard } from '../components/AIInsightCard';
 import { useSignal } from '../context/SignalContext';
 
@@ -17,16 +17,6 @@ const MOCK_CHANGES = [
   { id: 'BUG_262', type: 'Defect Fix', source: 'Jira', modules: ['Payments', 'API Gateway'], impact: 'High', status: 'Pending' },
 ];
 
-const MOCK_IMPACTED_MODULES = [
-  { name: 'Payments', impact: 'High', changes: 4, tests: 210, suite: 'Core + Extended', color: 'bg-error', textColor: 'text-error' },
-  { name: 'Login', impact: 'High', changes: 2, tests: 120, suite: 'Core', color: 'bg-error', textColor: 'text-error' },
-  { name: 'API Gateway', impact: 'High', changes: 2, tests: 88, suite: 'Core + Extended', color: 'bg-error', textColor: 'text-error' },
-  { name: 'User Management', impact: 'Medium', changes: 2, tests: 64, suite: 'Core', color: 'bg-primary', textColor: 'text-primary' },
-  { name: 'Portfolio', impact: 'Medium', changes: 2, tests: 45, suite: 'Smoke + Core', color: 'bg-primary', textColor: 'text-primary' },
-  { name: 'Dashboard', impact: 'Medium', changes: 2, tests: 38, suite: 'Smoke', color: 'bg-primary', textColor: 'text-primary' },
-  { name: 'Notifications', impact: 'Low', changes: 1, tests: 22, suite: 'Smoke', color: 'bg-tertiary', textColor: 'text-tertiary' },
-  { name: 'Reporting', impact: 'Low', changes: 1, tests: 18, suite: 'Smoke', color: 'bg-tertiary', textColor: 'text-tertiary' },
-];
 
 export const ChangeSignal = () => {
   const navigate = useNavigate();
@@ -215,39 +205,6 @@ export const ChangeSignal = () => {
                     ))}
                   </tbody>
                 </table>
-              </div>
-            </div>
-
-            {/* Impacted Modules Summary */}
-            <div className="bg-surface-container-lowest rounded-md ring-1 ring-outline-variant/15 overflow-hidden">
-              <div className="px-4 py-3 bg-surface-container-low border-b border-outline-variant/10 flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-primary" />
-                  <h3 className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Change Impact — Impacted Modules</h3>
-                </div>
-                <div className="flex gap-2">
-                  <span className="bg-error/10 text-error text-[10px] px-2 py-1 rounded-sm font-bold">3 HIGH</span>
-                  <span className="bg-primary/10 text-primary text-[10px] px-2 py-1 rounded-sm font-bold">3 MEDIUM</span>
-                  <span className="bg-tertiary/10 text-tertiary text-[10px] px-2 py-1 rounded-sm font-bold">2 LOW</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-4 gap-0 divide-x divide-y divide-outline-variant/10">
-                {MOCK_IMPACTED_MODULES.map((mod) => (
-                  <div key={mod.name} className="p-4 hover:bg-surface-container-high transition-colors">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className={`w-2 h-2 rounded-full ${mod.color} shrink-0`}></div>
-                      <span className="text-xs font-bold text-on-surface truncate">{mod.name}</span>
-                    </div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded-sm ${mod.impact === 'High' ? 'bg-error/10 text-error' : mod.impact === 'Medium' ? 'bg-primary/10 text-primary' : 'bg-tertiary/10 text-tertiary'}`}>{mod.impact}</span>
-                      <span className="text-[10px] font-bold text-outline">{mod.changes} change{mod.changes > 1 ? 's' : ''}</span>
-                    </div>
-                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-outline-variant/10">
-                      <span className="text-[10px] text-on-surface-variant font-medium">{mod.tests} tests</span>
-                      <span className="text-[10px] font-bold text-on-surface-variant truncate max-w-[80px] text-right">{mod.suite}</span>
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
 
