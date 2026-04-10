@@ -202,13 +202,6 @@ export const TestCaseRegistration = () => {
     } catch (_) {
       // proceed even if login request fails
     }
-    const w = window.screen.width;
-    const h = window.screen.height;
-    window.open(
-      'https://dev-intelliqa.incedolabs.com/',
-      'intelliqa',
-      `width=${w},height=${h},top=0,left=0,toolbar=no,menubar=no,location=no,status=no,scrollbars=yes`
-    );
     setIsIframeLoading(false);
   };
 
@@ -418,14 +411,15 @@ export const TestCaseRegistration = () => {
         </aside>
       </div>
 
-      {/* IntelliQA Launch Modal */}
+      {/* IntelliQA Iframe Modal */}
       {isIframeOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-md flex flex-col">
-            <div className="px-5 py-4 border-b border-outline-variant/15 flex justify-between items-center">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-surface-container-lowest rounded-2xl shadow-2xl flex flex-col overflow-hidden" style={{ width: '92vw', height: '92vh' }}>
+            {/* Modal header */}
+            <div className="px-5 py-3 border-b border-outline-variant/15 flex justify-between items-center shrink-0 bg-surface-container-lowest">
               <div className="flex items-center gap-2">
                 <Plus className="w-4 h-4 text-primary" />
-                <span className="text-sm font-bold text-on-surface">Create Test Case</span>
+                <span className="text-sm font-bold text-on-surface">Create Test Case — IntelliQA</span>
               </div>
               <button
                 onClick={() => setIsIframeOpen(false)}
@@ -434,44 +428,36 @@ export const TestCaseRegistration = () => {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-8 flex flex-col items-center gap-5">
-              {isIframeLoading ? (
-                <>
-                  <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  <div className="text-center">
-                    <p className="text-sm font-bold text-on-surface">Signing in to IntelliQA...</p>
-                    <p className="text-xs text-secondary mt-1">Authenticating your session</p>
+
+            {/* Iframe container */}
+            <div className="flex-1 relative overflow-hidden">
+              {/* Loading spinner */}
+              {isIframeLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-surface-container-lowest z-20">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <span className="text-xs text-secondary font-medium">Signing in to IntelliQA...</span>
                   </div>
-                </>
-              ) : (
-                <>
-                  <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
-                    <CheckCircle2 className="w-7 h-7 text-primary" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm font-bold text-on-surface">IntelliQA is ready</p>
-                    <p className="text-xs text-secondary mt-1">A new window has opened with the platform.</p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      window.open(
-                        'https://dev-intelliqa.incedolabs.com/',
-                        'intelliqa',
-                        `width=${window.screen.width},height=${window.screen.height},top=0,left=0,toolbar=no,menubar=no,location=no,status=no,scrollbars=yes`
-                      );
-                    }}
-                    className="text-xs font-bold text-primary hover:underline"
-                  >
-                    Re-open if window was blocked
-                  </button>
-                  <button
-                    onClick={() => setIsIframeOpen(false)}
-                    className="w-full bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-lg text-sm font-bold hover:bg-surface-container-highest transition-colors"
-                  >
-                    Close
-                  </button>
-                </>
+                </div>
               )}
+
+              {/* Frosted blur bar covering top ~56px of iframe (hides any URL/nav bar) */}
+              <div
+                className="absolute top-0 left-0 right-0 z-10 pointer-events-none"
+                style={{
+                  height: '56px',
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
+                  background: 'rgba(255,255,255,0.55)',
+                }}
+              />
+
+              <iframe
+                src={isIframeLoading ? undefined : 'https://dev-intelliqa.incedolabs.com/'}
+                className="w-full h-full border-0"
+                title="IntelliQA"
+                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+              />
             </div>
           </div>
         </div>
