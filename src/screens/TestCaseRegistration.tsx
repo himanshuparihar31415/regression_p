@@ -185,15 +185,19 @@ export const TestCaseRegistration = () => {
   };
 
   const handleCreateRedirect = async () => {
-    await fetch('https://dev-intelliqa.incedolabs.com/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: 'admin@incedolabs.com',
-        password: 'BrainSparkIncedo@2023'
-      }),
-      credentials: 'include'
-    });
+    try {
+      await fetch('https://dev-intelliqa.incedolabs.com/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: 'admin@incedolabs.com',
+          password: 'BrainSparkIncedo@2023'
+        }),
+        credentials: 'include'
+      });
+    } catch (_) {
+      // proceed to redirect even if login request fails
+    }
     window.location.href = 'https://dev-intelliqa.incedolabs.com/';
   };
 
