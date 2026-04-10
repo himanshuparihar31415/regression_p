@@ -3,8 +3,13 @@ import { CheckCircle2, Circle, Gauge, AlertTriangle, BarChart2, TrendingUp } fro
 
 const MOCK_IMPACT_MODULES = [
   { name: 'Payments', impact: 'High', count: 210, suite: 'Core + Extended', color: 'bg-error' },
-  { name: 'Login', impact: 'Medium', count: 120, suite: 'Core', color: 'bg-primary' },
-  { name: 'Portfolio', impact: 'Low', count: 45, suite: 'Smoke', color: 'bg-tertiary' },
+  { name: 'Login', impact: 'High', count: 120, suite: 'Core', color: 'bg-error' },
+  { name: 'API Gateway', impact: 'High', count: 88, suite: 'Core + Extended', color: 'bg-error' },
+  { name: 'User Management', impact: 'Medium', count: 64, suite: 'Core', color: 'bg-primary' },
+  { name: 'Portfolio', impact: 'Medium', count: 45, suite: 'Smoke + Core', color: 'bg-primary' },
+  { name: 'Dashboard', impact: 'Medium', count: 38, suite: 'Smoke', color: 'bg-primary' },
+  { name: 'Notifications', impact: 'Low', count: 22, suite: 'Smoke', color: 'bg-tertiary' },
+  { name: 'Reporting', impact: 'Low', count: 18, suite: 'Smoke', color: 'bg-tertiary' },
 ];
 
 export const ScopePlanning = () => {

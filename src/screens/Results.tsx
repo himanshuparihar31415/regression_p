@@ -8,12 +8,19 @@ const trendData = [
   { name: 'Wed', pass: 88, fail: 12 },
   { name: 'Thu', pass: 96, fail: 4 },
   { name: 'Fri', pass: 94, fail: 6 },
+  { name: 'Sat', pass: 97, fail: 3 },
+  { name: 'Sun', pass: 91, fail: 9 },
 ];
 
 const MOCK_HISTORY = [
   { id: 'RUN_1024', suite: 'Core Regression', env: 'UAT', duration: '1h 12m', pass: '94.2%', status: 'Completed' },
   { id: 'RUN_1023', suite: 'Smoke Test', env: 'QA', duration: '15m', pass: '100%', status: 'Completed' },
   { id: 'RUN_1022', suite: 'Extended Suite', env: 'Pre-Prod', duration: '4h 22m', pass: '88.4%', status: 'Completed' },
+  { id: 'RUN_1021', suite: 'Payments Regression', env: 'UAT', duration: '58m', pass: '91.7%', status: 'Completed' },
+  { id: 'RUN_1020', suite: 'Security & Auth', env: 'QA', duration: '22m', pass: '97.2%', status: 'Completed' },
+  { id: 'RUN_1019', suite: 'API Gateway Regression', env: 'Pre-Prod', duration: '34m', pass: '89.3%', status: 'Completed' },
+  { id: 'RUN_1018', suite: 'Core Regression', env: 'UAT', duration: '1h 08m', pass: '96.1%', status: 'Completed' },
+  { id: 'RUN_1017', suite: 'Smoke Test', env: 'QA', duration: '13m', pass: '100%', status: 'Completed' },
 ];
 
 export const Results = () => {

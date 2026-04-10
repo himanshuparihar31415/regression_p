@@ -2,61 +2,145 @@ import React, { useState } from 'react';
 import { FileUp, Plus, Search, Filter, MoreVertical, X, ListOrdered, CheckCircle2, Edit3, Link as LinkIcon, FolderTree, Tag } from 'lucide-react';
 
 const MOCK_TEST_CASES = [
-  { 
-    id: 'TC_001', 
-    name: 'Login Valid User', 
+  {
+    id: 'TC_001',
+    name: 'Login Valid User',
     description: 'Verify that a user can successfully log in with valid credentials.',
-    module: 'Login', 
+    module: 'Login',
     feature: 'Authentication',
-    type: 'UI', 
-    priority: 'High', 
-    status: 'Active', 
+    type: 'UI',
+    priority: 'High',
+    status: 'Active',
     project: 'Retail App v1.0',
     linkedRequirements: ['REQ-101', 'US-45'],
-    steps: ['Navigate to login page', 'Enter valid credentials', 'Click login'], 
-    expected: 'User is redirected to dashboard' 
+    steps: ['Navigate to login page', 'Enter valid credentials', 'Click login'],
+    expected: 'User is redirected to dashboard'
   },
-  { 
-    id: 'TC_045', 
-    name: 'Payment via Card', 
+  {
+    id: 'TC_045',
+    name: 'Payment via Card',
     description: 'Validate end-to-end card payment processing through the checkout gateway.',
-    module: 'Payments', 
+    module: 'Payments',
     feature: 'Checkout',
-    type: 'API', 
-    priority: 'High', 
-    status: 'Active', 
+    type: 'API',
+    priority: 'High',
+    status: 'Active',
     project: 'Retail App v1.0',
     linkedRequirements: ['REQ-205', 'CR-12'],
-    steps: ['Initialize payment session via REST endpoint `/v1/checkout`', 'Submit encrypted payload with valid test card credentials'], 
-    expected: 'System confirms card authorization and triggers balance update in ledger service within 200ms latency window.' 
+    steps: ['Initialize payment session via REST endpoint `/v1/checkout`', 'Submit encrypted payload with valid test card credentials'],
+    expected: 'System confirms card authorization and triggers balance update in ledger service within 200ms latency window.'
   },
-  { 
-    id: 'TC_078', 
-    name: 'Portfolio View', 
+  {
+    id: 'TC_078',
+    name: 'Portfolio View',
     description: 'Ensure the portfolio summary displays correct asset allocation and values.',
-    module: 'Portfolio', 
+    module: 'Portfolio',
     feature: 'Dashboard',
-    type: 'UI', 
-    priority: 'Medium', 
-    status: 'Candidate', 
+    type: 'UI',
+    priority: 'Medium',
+    status: 'Candidate',
     project: 'Retail App v1.0',
     linkedRequirements: ['REQ-302'],
-    steps: ['Login to application', 'Navigate to portfolio section'], 
-    expected: 'Portfolio data is displayed correctly' 
+    steps: ['Login to application', 'Navigate to portfolio section'],
+    expected: 'Portfolio data is displayed correctly'
   },
-  { 
-    id: 'TC_012', 
-    name: 'Logout User', 
+  {
+    id: 'TC_012',
+    name: 'Logout User',
     description: 'Verify session termination and redirection upon logout.',
-    module: 'Login', 
+    module: 'Login',
     feature: 'Authentication',
-    type: 'UI', 
-    priority: 'Low', 
-    status: 'Deprecated', 
+    type: 'UI',
+    priority: 'Low',
+    status: 'Deprecated',
     project: 'Retail App v1.0',
     linkedRequirements: ['REQ-102'],
-    steps: ['Click logout button'], 
-    expected: 'User is redirected to login page' 
+    steps: ['Click logout button'],
+    expected: 'User is redirected to login page'
+  },
+  {
+    id: 'TC_089',
+    name: 'Wire Transfer Int',
+    description: 'Validate wire transfer initiation and settlement across internal accounts.',
+    module: 'Payments',
+    feature: 'Wire Transfer',
+    type: 'Integration',
+    priority: 'High',
+    status: 'Active',
+    project: 'Retail App v1.0',
+    linkedRequirements: ['REQ-210', 'CR-18'],
+    steps: ['Authenticate with test account', 'Navigate to wire transfer section', 'Enter recipient and amount', 'Confirm transfer via OTP'],
+    expected: 'Transfer is initiated and deducted from source balance within 5 seconds.'
+  },
+  {
+    id: 'TC_103',
+    name: 'MFA Enrollment',
+    description: 'Verify that users can enroll in multi-factor authentication successfully.',
+    module: 'User Management',
+    feature: 'Security',
+    type: 'UI',
+    priority: 'High',
+    status: 'Active',
+    project: 'Retail App v1.0',
+    linkedRequirements: ['REQ-115', 'US-88'],
+    steps: ['Login to account settings', 'Navigate to security section', 'Select MFA method (TOTP)', 'Scan QR code and verify'],
+    expected: 'MFA is activated and confirmation email sent to user.'
+  },
+  {
+    id: 'TC_112',
+    name: 'Portfolio Rebalance',
+    description: 'Verify that portfolio rebalancing correctly redistributes assets per target allocation.',
+    module: 'Portfolio',
+    feature: 'Rebalancing',
+    type: 'Functional',
+    priority: 'Medium',
+    status: 'Active',
+    project: 'Retail App v1.0',
+    linkedRequirements: ['REQ-310', 'US-102'],
+    steps: ['Login and navigate to portfolio', 'Click "Rebalance" action', 'Confirm target allocations'],
+    expected: 'Assets reallocated to match target percentages within 0.5% tolerance.'
+  },
+  {
+    id: 'TC_127',
+    name: 'API Rate Limit',
+    description: 'Verify that the API gateway enforces rate limits and returns 429 on breach.',
+    module: 'API Gateway',
+    feature: 'Rate Limiting',
+    type: 'API',
+    priority: 'High',
+    status: 'Under Review',
+    project: 'Retail App v1.0',
+    linkedRequirements: ['REQ-401', 'CR-25'],
+    steps: ['Send 100 requests within 60 seconds to `/v1/payments`', 'Send the 101st request'],
+    expected: 'API returns HTTP 429 Too Many Requests with Retry-After header.'
+  },
+  {
+    id: 'TC_134',
+    name: 'Notification Email',
+    description: 'Ensure transactional notification emails are dispatched on payment completion.',
+    module: 'Notifications',
+    feature: 'Email Alerts',
+    type: 'Functional',
+    priority: 'Medium',
+    status: 'Active',
+    project: 'Retail App v1.0',
+    linkedRequirements: ['REQ-512', 'US-76'],
+    steps: ['Complete a card payment', 'Check registered email inbox within 30 seconds'],
+    expected: 'Payment confirmation email received with correct transaction details.'
+  },
+  {
+    id: 'TC_148',
+    name: 'Report Export PDF',
+    description: 'Validate that the reporting module exports accurate PDF statements.',
+    module: 'Reporting',
+    feature: 'PDF Export',
+    type: 'UI',
+    priority: 'Low',
+    status: 'Candidate',
+    project: 'Retail App v1.0',
+    linkedRequirements: ['REQ-605'],
+    steps: ['Navigate to reporting section', 'Select date range', 'Click Export as PDF'],
+    expected: 'PDF downloaded contains correct transaction data for selected period.'
   },
 ];
 
@@ -68,7 +152,7 @@ export const TestCaseRegistration = () => {
   const [isImporting, setIsImporting] = useState(false);
   const [editingCase, setEditingCase] = useState<any>(null);
 
-  const modules = ['All', 'Login', 'Payments', 'Portfolio'];
+  const modules = ['All', 'Login', 'Payments', 'Portfolio', 'User Management', 'API Gateway', 'Notifications', 'Reporting'];
   const statuses = ['Active', 'Deprecated', 'Candidate', 'Under Review'];
   const types = ['Functional', 'UI', 'API', 'Integration'];
   const priorities = ['High', 'Medium', 'Low'];
@@ -85,7 +169,7 @@ export const TestCaseRegistration = () => {
       id: `TC_${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
       name: '',
       description: '',
-      module: 'Login',
+      module: 'Login' as string,
       feature: '',
       type: 'UI',
       priority: 'Medium',
