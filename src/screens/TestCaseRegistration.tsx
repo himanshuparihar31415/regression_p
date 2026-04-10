@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FileUp, Plus, Search, Filter, MoreVertical, X, ListOrdered, CheckCircle2, Edit3, Link as LinkIcon, FolderTree, Tag } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { FileUp, Plus, Search, Filter, MoreVertical, X, ListOrdered, CheckCircle2, Edit3, Link as LinkIcon, FolderTree, Tag, ArrowRight } from 'lucide-react';
 
 const MOCK_TEST_CASES = [
   {
@@ -145,6 +146,7 @@ const MOCK_TEST_CASES = [
 ];
 
 export const TestCaseRegistration = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedModule, setSelectedModule] = useState('All');
   const [selectedTestCase, setSelectedTestCase] = useState(MOCK_TEST_CASES[1]);
@@ -209,22 +211,28 @@ export const TestCaseRegistration = () => {
             <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded uppercase tracking-wider">Project Context</span>
             <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">Retail App v1.0 / Release Q1</span>
           </div>
-          <h2 className="text-2xl font-extrabold font-headline tracking-tight text-on-surface">Test Case Registration</h2>
-          <p className="text-sm text-secondary mt-1">Manage and architect precision-focused quality validation scenarios.</p>
+          <h2 className="text-2xl font-extrabold font-headline tracking-tight text-on-surface">Test Case Review</h2>
+          <p className="text-sm text-secondary mt-1">Review, validate, and manage quality scenarios mapped to the regression scope.</p>
         </div>
         <div className="flex gap-3">
-          <button 
+          <button
             onClick={handleImport}
             disabled={isImporting}
             className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md text-sm font-semibold flex items-center gap-2 hover:bg-surface-container-highest transition-colors disabled:opacity-50"
           >
             <FileUp className="w-4 h-4" /> {isImporting ? 'Normalizing...' : 'Import Test Cases'}
           </button>
-          <button 
+          <button
             onClick={handleCreate}
-            className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-4 py-2 rounded-md text-sm font-bold flex items-center gap-2 shadow-sm active:opacity-90"
+            className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md text-sm font-bold flex items-center gap-2 hover:bg-surface-container-highest transition-colors"
           >
             <Plus className="w-4 h-4" /> Create Test Case
+          </button>
+          <button
+            onClick={() => navigate('/automation')}
+            className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-4 py-2 rounded-md text-sm font-bold flex items-center gap-2 shadow-sm active:opacity-90"
+          >
+            Go to Automation <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       </div>
