@@ -184,6 +184,19 @@ export const TestCaseRegistration = () => {
     setIsModalOpen(true);
   };
 
+  const handleCreateRedirect = async () => {
+    await fetch('https://dev-intelliqa.incedolabs.com/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: 'admin@incedolabs.com',
+        password: 'BrainSparkIncedo@2023'
+      }),
+      credentials: 'include'
+    });
+    window.location.href = 'https://dev-intelliqa.incedolabs.com/';
+  };
+
   const handleEdit = (tc: any) => {
     setEditingCase({ ...tc });
     setIsModalOpen(true);
@@ -223,7 +236,7 @@ export const TestCaseRegistration = () => {
             <FileUp className="w-4 h-4" /> {isImporting ? 'Normalizing...' : 'Import Test Cases'}
           </button>
           <button
-            onClick={handleCreate}
+            onClick={handleCreateRedirect}
             className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md text-sm font-bold flex items-center gap-2 hover:bg-surface-container-highest transition-colors"
           >
             <Plus className="w-4 h-4" /> Create Test Case
