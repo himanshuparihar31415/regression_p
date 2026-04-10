@@ -202,7 +202,22 @@ export const TestCaseRegistration = () => {
     } catch (_) {
       // proceed even if login request fails
     }
+    const w = window.screen.availWidth;
+    const h = window.screen.availHeight;
+    const popup = window.open(
+      'https://dev-intelliqa.incedolabs.com/',
+      'intelliqa_create',
+      `width=${w},height=${h},top=0,left=0,toolbar=no,menubar=no,location=no,status=no,scrollbars=yes,resizable=yes`
+    );
     setIsIframeLoading(false);
+    if (popup) {
+      const timer = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(timer);
+          setIsIframeOpen(false);
+        }
+      }, 500);
+    }
   };
 
   const handleEdit = (tc: any) => {
@@ -411,13 +426,12 @@ export const TestCaseRegistration = () => {
         </aside>
       </div>
 
-      {/* IntelliQA Iframe Modal */}
+      {/* IntelliQA Popup Modal */}
       {isIframeOpen && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1e1e2e] rounded-2xl shadow-2xl flex flex-col overflow-hidden" style={{ width: '94vw', height: '94vh' }}>
-
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center">
+          <div className="bg-[#1e1e2e] rounded-2xl shadow-2xl flex flex-col overflow-hidden w-[420px]">
             {/* Title bar */}
-            <div className="flex items-center justify-between px-4 py-2.5 bg-[#2a2a3d] shrink-0">
+            <div className="flex items-center justify-between px-5 py-3.5 bg-[#2a2a3d]">
               <div className="flex items-center gap-2">
                 <Plus className="w-4 h-4 text-indigo-400" />
                 <span className="text-sm font-semibold text-white/90">Create Test Case</span>
@@ -431,33 +445,58 @@ export const TestCaseRegistration = () => {
             </div>
 
             {/* Address bar */}
-            <div className="flex items-center gap-2 px-4 py-2 bg-[#252535] border-b border-white/5 shrink-0">
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-[#252535] border-b border-white/5">
               <div className="flex-1 flex items-center gap-2 bg-[#1a1a2a] rounded-md px-3 py-1.5">
                 <svg className="w-3 h-3 text-green-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
                 </svg>
-                <span className="text-xs text-white/60 font-mono tracking-tight select-all">
-                  https://dev-intelliqa.incedolabs.com/
+                <span className="text-xs text-white/50 font-mono tracking-tight">
+                  dev-intelliqa.incedolabs.com
                 </span>
               </div>
             </div>
 
-            {/* Iframe */}
-            <div className="flex-1 relative bg-white overflow-hidden">
-              {isIframeLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-white z-10">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-                    <span className="text-xs text-gray-500 font-medium">Signing in to IntelliQA...</span>
+            {/* Body */}
+            <div className="p-8 flex flex-col items-center gap-5">
+              {isIframeLoading ? (
+                <>
+                  <div className="w-10 h-10 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+                  <div className="text-center">
+                    <p className="text-sm font-semibold text-white/90">Signing in to IntelliQA…</p>
+                    <p className="text-xs text-white/40 mt-1">Authenticating your session</p>
                   </div>
-                </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-14 h-14 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                    <CheckCircle2 className="w-7 h-7 text-indigo-400" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-semibold text-white/90">IntelliQA is open</p>
+                    <p className="text-xs text-white/40 mt-1">Use the IntelliQA window to create your test case.<br/>This dialog closes automatically when you're done.</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const w = window.screen.availWidth;
+                      const h = window.screen.availHeight;
+                      window.open(
+                        'https://dev-intelliqa.incedolabs.com/',
+                        'intelliqa_create',
+                        `width=${w},height=${h},top=0,left=0,toolbar=no,menubar=no,location=no,status=no,scrollbars=yes,resizable=yes`
+                      );
+                    }}
+                    className="text-xs font-bold text-indigo-400 hover:text-indigo-300 underline underline-offset-2"
+                  >
+                    Re-open if window was blocked
+                  </button>
+                  <button
+                    onClick={() => setIsIframeOpen(false)}
+                    className="w-full bg-white/10 hover:bg-white/15 text-white/80 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                  >
+                    Close
+                  </button>
+                </>
               )}
-              <iframe
-                src={isIframeLoading ? undefined : '/intelliqa/'}
-                className="w-full h-full border-0"
-                title="IntelliQA"
-                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation"
-              />
             </div>
           </div>
         </div>

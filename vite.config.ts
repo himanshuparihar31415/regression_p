@@ -19,20 +19,6 @@ export default defineConfig(({mode}) => {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modify — file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
-      proxy: {
-        '/intelliqa': {
-          target: 'https://dev-intelliqa.incedolabs.com',
-          changeOrigin: true,
-          secure: false,
-          rewrite: (path) => path.replace(/^\/intelliqa/, ''),
-          configure: (proxy) => {
-            proxy.on('proxyRes', (proxyRes) => {
-              delete proxyRes.headers['x-frame-options'];
-              delete proxyRes.headers['content-security-policy'];
-            });
-          },
-        },
-      },
     },
   };
 });
