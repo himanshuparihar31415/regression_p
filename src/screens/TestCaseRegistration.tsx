@@ -453,7 +453,7 @@ export const TestCaseRegistration = () => {
                 </div>
               )}
               <iframe
-                src={isIframeLoading ? undefined : 'https://dev-intelliqa.incedolabs.com/'}
+                src={isIframeLoading ? undefined : '/intelliqa/'}
                 className="w-full h-full border-0"
                 title="IntelliQA"
                 sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation"
