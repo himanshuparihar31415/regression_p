@@ -39,9 +39,39 @@ export const SideNavBar = () => {
   return (
     <aside className="h-screen w-64 fixed left-0 top-0 flex flex-col bg-surface-container-low border-r border-outline-variant/10 z-40">
       <div className="flex flex-col h-full py-6 px-4">
-        <div className="mb-8 px-2">
-          <div className="font-headline font-black text-primary uppercase tracking-widest text-lg">Intelli<span className="text-orange-500">QA</span></div>
-          <div className="text-[10px] text-secondary font-bold tracking-tight">Regression Manager</div>
+        <div className="mb-8 px-1">
+          <svg width="196" height="52" viewBox="0 0 196 52" xmlns="http://www.w3.org/2000/svg">
+            {/* Circle background */}
+            <circle cx="26" cy="26" r="23" fill="#EEF4FF" />
+
+            {/* Magnifying glass lens */}
+            <circle cx="22" cy="22" r="9" fill="none" stroke="#1e3a8a" strokeWidth="2.4" />
+            {/* Handle */}
+            <line x1="28.4" y1="28.4" x2="35" y2="35" stroke="#1e3a8a" strokeWidth="2.4" strokeLinecap="round" />
+            {/* Checkmark inside lens */}
+            <polyline points="16.5,22 20,25.5 27,16.5" fill="none" stroke="#1e3a8a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+
+            {/* Orange dot — top left */}
+            <circle cx="14" cy="13" r="2.8" fill="#f97316" />
+            {/* Blue dot — top right */}
+            <circle cx="29" cy="11.5" r="2.2" fill="#60a5fa" />
+
+            {/* "brAIn spark" */}
+            <text x="56" y="24" fontFamily="'Arial Black', Arial, sans-serif" fontSize="15" fontWeight="900">
+              <tspan fill="#0f172a">br</tspan>
+              <tspan fill="#f97316">AI</tspan>
+              <tspan fill="#0f172a">n spark</tspan>
+            </text>
+
+            {/* Divider line */}
+            <line x1="56" y1="29" x2="194" y2="29" stroke="#e2e8f0" strokeWidth="0.8" />
+
+            {/* "intelli QA" */}
+            <text x="57" y="42" fontFamily="Arial, sans-serif" fontSize="10.5" fontWeight="700" letterSpacing="2">
+              <tspan fill="#1d4ed8">intelli</tspan>
+              <tspan fill="#f97316"> QA</tspan>
+            </text>
+          </svg>
         </div>
         
         <nav className="flex-1 space-y-1 overflow-y-auto no-scrollbar">
