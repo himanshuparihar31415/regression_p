@@ -3,9 +3,15 @@ import { Play, Pause, Square, Activity, CheckCircle2, XCircle, Clock, AlertTrian
 
 const MOCK_RESULTS = [
   { id: 'TC_045', name: 'Payment via Card', status: 'Passed', time: '12s', thread: 'T-01' },
-  { id: 'TC_089', name: 'Wire Transfer Int', status: 'Failed', time: '45s', thread: 'T-04', error: 'Timeout: Element not visible' },
+  { id: 'TC_089', name: 'Wire Transfer Int', status: 'Failed', time: '45s', thread: 'T-04', error: 'TimeoutError: waiting for selector "[data-testid=\'success-icon\']" failed: timeout 30000ms exceeded' },
   { id: 'TC_001', name: 'Login Valid User', status: 'Passed', time: '8s', thread: 'T-02' },
   { id: 'TC_112', name: 'Portfolio Rebalance', status: 'Passed', time: '1m 2s', thread: 'T-08' },
+  { id: 'TC_103', name: 'MFA Enrollment', status: 'Passed', time: '22s', thread: 'T-03' },
+  { id: 'TC_127', name: 'API Rate Limit', status: 'Failed', time: '31s', thread: 'T-05', error: 'AssertionError: expected HTTP 429 but received HTTP 200 — rate limit not enforced' },
+  { id: 'TC_134', name: 'Notification Email', status: 'Passed', time: '18s', thread: 'T-06' },
+  { id: 'TC_012', name: 'Logout User', status: 'Passed', time: '5s', thread: 'T-07' },
+  { id: 'TC_078', name: 'Portfolio View', status: 'Passed', time: '14s', thread: 'T-09' },
+  { id: 'TC_148', name: 'Report Export PDF', status: 'Failed', time: '38s', thread: 'T-10', error: 'Error: PDF generation timeout — report service returned 504 Gateway Timeout' },
 ];
 
 export const ExecutionDashboard = () => {

@@ -7,6 +7,9 @@ const MOCK_TAGS = [
   { label: '@critical', color: 'error' },
   { label: '@high-risk', color: 'tertiary' },
   { label: '@core-flow', color: 'primary' },
+  { label: '@api', color: 'secondary' },
+  { label: '@security', color: 'error' },
+  { label: '@extended', color: 'tertiary' },
 ];
 
 const MOCK_SUITES = [
@@ -14,6 +17,8 @@ const MOCK_SUITES = [
   { id: 'S_002', title: 'Core Regression', subtitle: 'Main Functionality & Flows', tests: 48, tags: ['@regression', '@high-risk', '@core-flow'], status: 'Approved', version: 'v1.4.2', risk: 'Medium' },
   { id: 'S_003', title: 'Payments Regression', subtitle: 'Transactional Integrity', tests: 114, tags: ['@critical', '@regression', '@high-risk'], status: 'Under Review', version: 'v1.5.0-rc', risk: 'High' },
   { id: 'S_004', title: 'Extended Regression', subtitle: 'Deep Coverage / Major Release', tests: 320, tags: ['@regression', '@extended'], status: 'Draft', version: 'v2.0.0-alpha', risk: 'High' },
+  { id: 'S_005', title: 'Security & Auth Regression', subtitle: 'Login, MFA & Access Control', tests: 36, tags: ['@security', '@regression', '@critical'], status: 'Approved', version: 'v1.4.3', risk: 'High' },
+  { id: 'S_006', title: 'API Gateway Regression', subtitle: 'Rate Limiting & Contract Tests', tests: 28, tags: ['@api', '@regression', '@core-flow'], status: 'Under Review', version: 'v1.5.1-rc', risk: 'Medium' },
 ];
 
 export const TaggingGrouping = () => {

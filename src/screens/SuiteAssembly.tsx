@@ -5,6 +5,9 @@ const MOCK_MODULES = [
   { name: 'Payments', tests: 114, status: 'Ready' },
   { name: 'Login & Security', tests: 22, status: 'Ready' },
   { name: 'Portfolio', tests: 48, status: 'Ready' },
+  { name: 'User Management', tests: 34, status: 'Ready' },
+  { name: 'API Gateway', tests: 28, status: 'Ready' },
+  { name: 'Notifications', tests: 16, status: 'Ready' },
 ];
 
 const MOCK_SUITE_TESTS = [
@@ -12,11 +15,17 @@ const MOCK_SUITE_TESTS = [
   { id: 'TC_001', name: 'Login Valid User', module: 'Login', data: 'Default_Auth', priority: 'High' },
   { id: 'TC_089', name: 'Wire Transfer Int', module: 'Payments', data: 'Edge_Case_Accounts', priority: 'Critical' },
   { id: 'TC_112', name: 'Portfolio Rebalance', module: 'Portfolio', data: 'Portfolio_Benchmarks', priority: 'Medium' },
+  { id: 'TC_103', name: 'MFA Enrollment', module: 'User Management', data: 'MFA_Test_Accounts', priority: 'High' },
+  { id: 'TC_127', name: 'API Rate Limit', module: 'API Gateway', data: 'Load_Test_Tokens', priority: 'Critical' },
+  { id: 'TC_134', name: 'Notification Email', module: 'Notifications', data: 'Email_Test_Addresses', priority: 'Medium' },
+  { id: 'TC_012', name: 'Logout User', module: 'Login', data: 'Default_Auth', priority: 'Low' },
+  { id: 'TC_078', name: 'Portfolio View', module: 'Portfolio', data: 'Portfolio_Benchmarks', priority: 'Medium' },
+  { id: 'TC_148', name: 'Report Export PDF', module: 'Reporting', data: 'Report_Date_Ranges', priority: 'Low' },
 ];
 
 export const SuiteAssembly = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedModules, setSelectedModules] = useState<string[]>(['Payments', 'Login & Security', 'Portfolio']);
+  const [selectedModules, setSelectedModules] = useState<string[]>(['Payments', 'Login & Security', 'Portfolio', 'User Management', 'API Gateway', 'Notifications']);
 
   const toggleModule = (moduleName: string) => {
     setSelectedModules(prev => 
