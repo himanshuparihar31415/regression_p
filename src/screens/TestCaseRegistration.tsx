@@ -153,6 +153,8 @@ export const TestCaseRegistration = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [editingCase, setEditingCase] = useState<any>(null);
+  const [isIframeOpen, setIsIframeOpen] = useState(false);
+  const [isIframeLoading, setIsIframeLoading] = useState(false);
 
   const modules = ['All', 'Login', 'Payments', 'Portfolio', 'User Management', 'API Gateway', 'Notifications', 'Reporting'];
   const statuses = ['Active', 'Deprecated', 'Candidate', 'Under Review'];
@@ -185,6 +187,8 @@ export const TestCaseRegistration = () => {
   };
 
   const handleCreateRedirect = async () => {
+    setIsIframeLoading(true);
+    setIsIframeOpen(true);
     try {
       await fetch('https://dev-intelliqa.incedolabs.com/api/login', {
         method: 'POST',
@@ -196,9 +200,9 @@ export const TestCaseRegistration = () => {
         credentials: 'include'
       });
     } catch (_) {
-      // proceed to redirect even if login request fails
+      // proceed to load iframe even if login request fails
     }
-    window.location.href = 'https://dev-intelliqa.incedolabs.com/';
+    setIsIframeLoading(false);
   };
 
   const handleEdit = (tc: any) => {
@@ -406,6 +410,41 @@ export const TestCaseRegistration = () => {
           </div>
         </aside>
       </div>
+
+      {/* IntelliQA Iframe Modal */}
+      {isIframeOpen && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-6xl flex flex-col" style={{ height: '90vh' }}>
+            <div className="px-5 py-3 border-b border-outline-variant/15 flex justify-between items-center shrink-0">
+              <div className="flex items-center gap-2">
+                <Plus className="w-4 h-4 text-primary" />
+                <span className="text-sm font-bold text-on-surface">Create Test Case</span>
+              </div>
+              <button
+                onClick={() => setIsIframeOpen(false)}
+                className="text-secondary hover:text-on-surface transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 relative overflow-hidden rounded-b-2xl">
+              {isIframeLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-surface-container-lowest z-10">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <span className="text-xs text-secondary font-medium">Loading IntelliQA...</span>
+                  </div>
+                </div>
+              )}
+              <iframe
+                src="https://dev-intelliqa.incedolabs.com/"
+                className="w-full h-full border-0 rounded-b-2xl"
+                title="IntelliQA"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Create/Edit Modal */}
       {isModalOpen && editingCase && (
