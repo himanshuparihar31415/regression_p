@@ -414,49 +414,49 @@ export const TestCaseRegistration = () => {
       {/* IntelliQA Iframe Modal */}
       {isIframeOpen && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-surface-container-lowest rounded-2xl shadow-2xl flex flex-col overflow-hidden" style={{ width: '92vw', height: '92vh' }}>
-            {/* Modal header */}
-            <div className="px-5 py-3 border-b border-outline-variant/15 flex justify-between items-center shrink-0 bg-surface-container-lowest">
+          <div className="bg-[#1e1e2e] rounded-2xl shadow-2xl flex flex-col overflow-hidden" style={{ width: '94vw', height: '94vh' }}>
+
+            {/* Title bar */}
+            <div className="flex items-center justify-between px-4 py-2.5 bg-[#2a2a3d] shrink-0">
               <div className="flex items-center gap-2">
-                <Plus className="w-4 h-4 text-primary" />
-                <span className="text-sm font-bold text-on-surface">Create Test Case — IntelliQA</span>
+                <Plus className="w-4 h-4 text-indigo-400" />
+                <span className="text-sm font-semibold text-white/90">Create Test Case</span>
               </div>
               <button
                 onClick={() => setIsIframeOpen(false)}
-                className="text-secondary hover:text-on-surface transition-colors"
+                className="text-white/50 hover:text-white transition-colors rounded-full hover:bg-white/10 p-1"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Iframe container */}
-            <div className="flex-1 relative overflow-hidden">
-              {/* Loading spinner */}
+            {/* Address bar */}
+            <div className="flex items-center gap-2 px-4 py-2 bg-[#252535] border-b border-white/5 shrink-0">
+              <div className="flex-1 flex items-center gap-2 bg-[#1a1a2a] rounded-md px-3 py-1.5">
+                <svg className="w-3 h-3 text-green-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                </svg>
+                <span className="text-xs text-white/60 font-mono tracking-tight select-all">
+                  https://dev-intelliqa.incedolabs.com/
+                </span>
+              </div>
+            </div>
+
+            {/* Iframe */}
+            <div className="flex-1 relative bg-white overflow-hidden">
               {isIframeLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-surface-container-lowest z-20">
+                <div className="absolute inset-0 flex items-center justify-center bg-white z-10">
                   <div className="flex flex-col items-center gap-3">
-                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                    <span className="text-xs text-secondary font-medium">Signing in to IntelliQA...</span>
+                    <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-xs text-gray-500 font-medium">Signing in to IntelliQA...</span>
                   </div>
                 </div>
               )}
-
-              {/* Frosted blur bar covering top ~56px of iframe (hides any URL/nav bar) */}
-              <div
-                className="absolute top-0 left-0 right-0 z-10 pointer-events-none"
-                style={{
-                  height: '56px',
-                  backdropFilter: 'blur(12px)',
-                  WebkitBackdropFilter: 'blur(12px)',
-                  background: 'rgba(255,255,255,0.55)',
-                }}
-              />
-
               <iframe
                 src={isIframeLoading ? undefined : 'https://dev-intelliqa.incedolabs.com/'}
                 className="w-full h-full border-0"
                 title="IntelliQA"
-                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation"
               />
             </div>
           </div>
