@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FileUp, Plus, Search, Filter, MoreVertical, X, ListOrdered, CheckCircle2, Edit3, Link as LinkIcon, FolderTree, Tag } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { FileUp, Plus, Search, Filter, MoreVertical, X, ListOrdered, CheckCircle2, Edit3, Link as LinkIcon, FolderTree, Tag, ArrowRight } from 'lucide-react';
 
 const MOCK_TEST_CASES = [
   {
@@ -145,12 +146,15 @@ const MOCK_TEST_CASES = [
 ];
 
 export const TestCaseRegistration = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedModule, setSelectedModule] = useState('All');
   const [selectedTestCase, setSelectedTestCase] = useState(MOCK_TEST_CASES[1]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [editingCase, setEditingCase] = useState<any>(null);
+  const [isIframeOpen, setIsIframeOpen] = useState(false);
+  const [isIframeLoading, setIsIframeLoading] = useState(false);
 
   const modules = ['All', 'Login', 'Payments', 'Portfolio', 'User Management', 'API Gateway', 'Notifications', 'Reporting'];
   const statuses = ['Active', 'Deprecated', 'Candidate', 'Under Review'];
@@ -182,6 +186,40 @@ export const TestCaseRegistration = () => {
     setIsModalOpen(true);
   };
 
+  const handleCreateRedirect = async () => {
+    setIsIframeLoading(true);
+    setIsIframeOpen(true);
+    try {
+      await fetch('https://dev-intelliqa.incedolabs.com/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: 'admin@incedolabs.com',
+          password: 'BrainSparkIncedo@2023'
+        }),
+        credentials: 'include'
+      });
+    } catch (_) {
+      // proceed even if login request fails
+    }
+    const w = window.screen.availWidth;
+    const h = window.screen.availHeight;
+    const popup = window.open(
+      'https://dev-intelliqa.incedolabs.com/',
+      'intelliqa_create',
+      `width=${w},height=${h},top=0,left=0,toolbar=no,menubar=no,location=no,status=no,scrollbars=yes,resizable=yes`
+    );
+    setIsIframeLoading(false);
+    if (popup) {
+      const timer = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(timer);
+          setIsIframeOpen(false);
+        }
+      }, 500);
+    }
+  };
+
   const handleEdit = (tc: any) => {
     setEditingCase({ ...tc });
     setIsModalOpen(true);
@@ -209,22 +247,28 @@ export const TestCaseRegistration = () => {
             <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded uppercase tracking-wider">Project Context</span>
             <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">Retail App v1.0 / Release Q1</span>
           </div>
-          <h2 className="text-2xl font-extrabold font-headline tracking-tight text-on-surface">Test Case Registration</h2>
-          <p className="text-sm text-secondary mt-1">Manage and architect precision-focused quality validation scenarios.</p>
+          <h2 className="text-2xl font-extrabold font-headline tracking-tight text-on-surface">Test Case Review</h2>
+          <p className="text-sm text-secondary mt-1">Review, validate, and manage quality scenarios mapped to the regression scope.</p>
         </div>
         <div className="flex gap-3">
-          <button 
+          <button
             onClick={handleImport}
             disabled={isImporting}
             className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md text-sm font-semibold flex items-center gap-2 hover:bg-surface-container-highest transition-colors disabled:opacity-50"
           >
             <FileUp className="w-4 h-4" /> {isImporting ? 'Normalizing...' : 'Import Test Cases'}
           </button>
-          <button 
-            onClick={handleCreate}
-            className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-4 py-2 rounded-md text-sm font-bold flex items-center gap-2 shadow-sm active:opacity-90"
+          <button
+            onClick={handleCreateRedirect}
+            className="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md text-sm font-bold flex items-center gap-2 hover:bg-surface-container-highest transition-colors"
           >
             <Plus className="w-4 h-4" /> Create Test Case
+          </button>
+          <button
+            onClick={() => navigate('/automation')}
+            className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-4 py-2 rounded-md text-sm font-bold flex items-center gap-2 shadow-sm active:opacity-90"
+          >
+            Go to Automation <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -381,6 +425,82 @@ export const TestCaseRegistration = () => {
           </div>
         </aside>
       </div>
+
+      {/* IntelliQA Popup Modal */}
+      {isIframeOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center">
+          <div className="bg-[#1e1e2e] rounded-2xl shadow-2xl flex flex-col overflow-hidden w-[420px]">
+            {/* Title bar */}
+            <div className="flex items-center justify-between px-5 py-3.5 bg-[#2a2a3d]">
+              <div className="flex items-center gap-2">
+                <Plus className="w-4 h-4 text-indigo-400" />
+                <span className="text-sm font-semibold text-white/90">Create Test Case</span>
+              </div>
+              <button
+                onClick={() => setIsIframeOpen(false)}
+                className="text-white/50 hover:text-white transition-colors rounded-full hover:bg-white/10 p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Address bar */}
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-[#252535] border-b border-white/5">
+              <div className="flex-1 flex items-center gap-2 bg-[#1a1a2a] rounded-md px-3 py-1.5">
+                <svg className="w-3 h-3 text-green-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                </svg>
+                <span className="text-xs text-white/50 font-mono tracking-tight">
+                  dev-intelliqa.incedolabs.com
+                </span>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="p-8 flex flex-col items-center gap-5">
+              {isIframeLoading ? (
+                <>
+                  <div className="w-10 h-10 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+                  <div className="text-center">
+                    <p className="text-sm font-semibold text-white/90">Signing in to IntelliQA…</p>
+                    <p className="text-xs text-white/40 mt-1">Authenticating your session</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-14 h-14 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                    <CheckCircle2 className="w-7 h-7 text-indigo-400" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-semibold text-white/90">IntelliQA is open</p>
+                    <p className="text-xs text-white/40 mt-1">Use the IntelliQA window to create your test case.<br/>This dialog closes automatically when you're done.</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const w = window.screen.availWidth;
+                      const h = window.screen.availHeight;
+                      window.open(
+                        'https://dev-intelliqa.incedolabs.com/',
+                        'intelliqa_create',
+                        `width=${w},height=${h},top=0,left=0,toolbar=no,menubar=no,location=no,status=no,scrollbars=yes,resizable=yes`
+                      );
+                    }}
+                    className="text-xs font-bold text-indigo-400 hover:text-indigo-300 underline underline-offset-2"
+                  >
+                    Re-open if window was blocked
+                  </button>
+                  <button
+                    onClick={() => setIsIframeOpen(false)}
+                    className="w-full bg-white/10 hover:bg-white/15 text-white/80 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                  >
+                    Close
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Create/Edit Modal */}
       {isModalOpen && editingCase && (
