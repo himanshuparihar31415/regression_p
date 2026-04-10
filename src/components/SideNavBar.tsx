@@ -41,7 +41,7 @@ export const SideNavBar = () => {
       <div className="flex flex-col h-full py-6 px-4">
         <div className="mb-8 px-2">
           <div className="font-headline font-black text-primary uppercase tracking-widest text-lg">Intelli<span className="text-orange-500">QA</span></div>
-          <div className="text-[10px] text-secondary font-bold tracking-tight">Precision Architect</div>
+          <div className="text-[10px] text-secondary font-bold tracking-tight">Regression Manager</div>
         </div>
         
         <nav className="flex-1 space-y-1 overflow-y-auto no-scrollbar">
