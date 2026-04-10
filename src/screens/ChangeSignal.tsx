@@ -1,8 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, TrendingUp, Search, Database, Github, GitBranch, RefreshCw, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
+import { Play, TrendingUp, Search, Database, Github, RefreshCw, CheckCircle2, ArrowRight, Zap } from 'lucide-react';
 import { AIInsightCard } from '../components/AIInsightCard';
 import { useSignal } from '../context/SignalContext';
+
+const DETECTION_PHASES = [
+  { pct: 0,  msg: 'Initializing ingestion connectors...' },
+  { pct: 10, msg: 'Connecting to Jira (PROJ-A)...' },
+  { pct: 20, msg: 'Authenticating with GitHub API...' },
+  { pct: 30, msg: 'Fetching open change records from source...' },
+  { pct: 40, msg: 'Scanning Git diff — branch: main...' },
+  { pct: 52, msg: 'Parsing commit history & PR metadata...' },
+  { pct: 62, msg: 'Analyzing semantic impact signatures...' },
+  { pct: 71, msg: 'Mapping changes to test modules...' },
+  { pct: 80, msg: 'Buffering signal payload...' },
+  { pct: 88, msg: 'Cross-referencing dependency graph...' },
+  { pct: 94, msg: 'Classifying regression risk levels...' },
+  { pct: 99, msg: 'Finalizing signal registry...' },
+];
 
 const MOCK_CHANGES = [
   { id: 'CR_101', type: 'Feature', source: 'Jira', modules: ['Payments', 'Portfolio'], impact: 'High', status: 'Pending' },
@@ -23,6 +38,9 @@ export const ChangeSignal = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedChanges, setSelectedChanges] = useState<string[]>([]);
   const [isDetecting, setIsDetecting] = useState(false);
+  const [detectPct, setDetectPct] = useState(0);
+  const [phaseIdx, setPhaseIdx] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { isSignalDetected, setIsSignalDetected } = useSignal();
 
   const [configs, setConfigs] = useState({
@@ -42,12 +60,30 @@ export const ChangeSignal = () => {
     );
   };
 
+  useEffect(() => {
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, []);
+
   const handleDetect = () => {
     setIsDetecting(true);
-    setTimeout(() => {
-      setIsDetecting(false);
-      setIsSignalDetected(true);
-    }, 2000);
+    setDetectPct(0);
+    setPhaseIdx(0);
+    // ~18 seconds: increment by 1 every 180ms
+    intervalRef.current = setInterval(() => {
+      setDetectPct(prev => {
+        const next = prev + 1;
+        const nextPhase = DETECTION_PHASES.filter(p => p.pct <= next).length - 1;
+        setPhaseIdx(Math.max(0, nextPhase));
+        if (next >= 100) {
+          clearInterval(intervalRef.current!);
+          setTimeout(() => {
+            setIsDetecting(false);
+            setIsSignalDetected(true);
+          }, 600);
+        }
+        return Math.min(next, 100);
+      });
+    }, 180);
   };
 
   const handleTrigger = () => {
@@ -231,6 +267,61 @@ export const ChangeSignal = () => {
               </div>
             )}
           </>
+        ) : isDetecting ? (
+          /* ── Detection progress UI ── */
+          <div className="flex-1 flex flex-col items-center justify-center rounded-2xl bg-surface-container-low/40 border border-outline-variant/10 p-10 space-y-8">
+            {/* Spinning ring + percentage */}
+            <div className="relative w-32 h-32">
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" strokeWidth="6" className="text-outline-variant/20" />
+                <circle
+                  cx="50" cy="50" r="44" fill="none" stroke="currentColor" strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeDasharray={`${2 * Math.PI * 44}`}
+                  strokeDashoffset={`${2 * Math.PI * 44 * (1 - detectPct / 100)}`}
+                  className="text-primary transition-all duration-150"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <Zap className="w-5 h-5 text-primary mb-0.5" />
+                <span className="text-2xl font-black text-on-surface tabular-nums">{detectPct}%</span>
+              </div>
+            </div>
+
+            {/* Current phase message */}
+            <div className="text-center space-y-1.5">
+              <p className="text-sm font-bold text-on-surface tracking-tight">
+                {DETECTION_PHASES[phaseIdx]?.msg}
+              </p>
+              <p className="text-[11px] text-on-surface-variant">
+                Scanning {configs.jira.enabled ? 'Jira · ' : ''}{configs.git.enabled ? 'GitHub · ' : ''}{configs.azure.enabled ? 'Azure DevOps' : ''}
+              </p>
+            </div>
+
+            {/* Progress bar */}
+            <div className="w-full max-w-sm space-y-1.5">
+              <div className="w-full h-1.5 bg-outline-variant/20 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full transition-all duration-150"
+                  style={{ width: `${detectPct}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-[10px] text-on-surface-variant font-medium px-0.5">
+                <span>Phase {Math.min(phaseIdx + 1, DETECTION_PHASES.length)} of {DETECTION_PHASES.length}</span>
+                <span>{detectPct}% complete</span>
+              </div>
+            </div>
+
+            {/* Phase log */}
+            <div className="w-full max-w-sm bg-surface-container-lowest rounded-xl p-4 space-y-1.5 font-mono text-[10px] text-on-surface-variant max-h-36 overflow-hidden">
+              {DETECTION_PHASES.slice(0, phaseIdx + 1).map((p, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <CheckCircle2 className={`w-3 h-3 shrink-0 ${i < phaseIdx ? 'text-primary' : 'text-outline animate-pulse'}`} />
+                  <span className={i < phaseIdx ? 'text-on-surface-variant' : 'text-on-surface font-bold'}>{p.msg}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant/20 rounded-2xl bg-surface-container-low/30 p-12 text-center space-y-4">
             <div className="p-4 bg-primary/10 rounded-full">
